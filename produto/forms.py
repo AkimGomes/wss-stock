@@ -24,24 +24,28 @@ class CadastroProdutoForms(forms.Form):
             }
         )
     )
-    preco_custo = forms.CharField(
+    preco_custo = forms.FloatField(
         label="Preço de compra do Produto",
-        required=True,
-        max_length=50,
-        widget=forms.TextInput(
+        required=False,
+        max_value=100000,
+        min_value=0,
+        widget=forms.NumberInput(
             attrs={
                 "class": "form-control",
+                "step": "0.01",
                 "placeholder": "Ex.: 1,99",
             }
         )
     )
-    preco_venda = forms.CharField(
+    preco_venda = forms.FloatField(
         label="Preço de venda do Produto",
-        required=True,
-        max_length=50,
-        widget=forms.TextInput(
+        required=False,
+        max_value=100000,
+        min_value=0,
+        widget=forms.NumberInput(
             attrs={
                 "class": "form-control",
+                "step": "0.01",
                 "placeholder": "Ex.: 1,99",
             }
         )

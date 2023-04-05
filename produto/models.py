@@ -7,7 +7,7 @@ class Produto(models.Model):
     descricao = models.TextField(null=False, blank=False)
     preco_custo = models.CharField(max_length=50, null=False, blank=False)
     preco_venda = models.CharField(max_length=50, null=False, blank=False)
-
+    publicado = models.BooleanField(default=True)
     tipo_produto = models.CharField(max_length=50, null=False, blank=False)
     descricao_tipo = models.TextField(null=False, blank=False)
 

@@ -1,0 +1,63 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Cadastro de Produto</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static '/produto.css' %}">
+</head>
+
+<body>
+    <header>
+        <div class="navbar fixed-top navbar-dark bg-dark shadow-sm">
+            <div class="container d-flex justify-content-between">
+                <a class="navbar-brand d-flex align-items-center" href="{% url 'index' %}">WSS-Stock</a>
+            </div>
+            <div class="buscar">
+                <form action="{% url 'buscar' %}">
+                    <input name="buscar" class="buscar" type="text" placeholder="O que você procura?">
+                    <button type="submit">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                          <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                        </svg>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </header>
+    <div class="container">
+        <form action="{% url 'index' %}" method="GET" >
+            <h1>Produtos</h1>
+                {% csrf_token %}
+                <div class="row">
+                    {% for produto in produtos %}
+
+                        <div class="row">
+                            <div class="col">
+                                <input type="text" class="form-control" placeholder="{{ produto.nome }}" readonly>
+                            </div>
+                            <div class="col">
+                                <input type="text" class="form-control" placeholder="{{ produto.tipo_produto }}" readonly>
+                            </div>
+                            <div class="col">
+                                <input type="text" class="form-control" placeholder="{{ produto.preco_venda }}" readonly>
+                            </div>
+                            <div class="col">
+                                <a class="btn btn-primary" href="{% url 'atualizar_produto' produto.id%}">Atualizar</a>
+                                <a class="btn btn-danger" href="{% url 'deletar_produto' produto.id%}">Excluir</a>
+                            </div>
+                        </div>
+
+                    {% endfor %}
+
+                    <div class="botao">
+                        <a class="btn btn-success btn-salvar" href="{% url 'cadastro_produto' %}">Cadastrar Novo Produto</a>
+                    </div>
+
+                </div>
+        </form>
+    </div>
+</body>

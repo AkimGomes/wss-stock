@@ -14,8 +14,22 @@
     <header>
         <div class="navbar fixed-top navbar-dark bg-dark shadow-sm">
             <div class="container d-flex justify-content-between">
-                <a class="navbar-brand d-flex align-items-center" href="#">WSS-Stock</a>
+                <a class="navbar-brand d-flex align-items-center" href="{% url 'index' %}">WSS-Stock</a>
             </div>
+
+            <div class="buscar">
+                <div class="buscar">
+                    <form action="{% url 'buscar' %}">
+                        <input name="buscar" class="busca__input" type="text" placeholder="O que você procura?">
+                        <button type="submit">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                              <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                            </svg>
+                        </button>
+                    </form>
+                </div>
+            </div>
+
         </div>
     </header>
     <div class="container">
@@ -51,6 +65,48 @@
                     <div class="botao">
                         <a class="btn btn-success btn-salvar" href="{% url 'cadastro_produto' %}">Cadastrar Novo Produto</a>
                     </div>
+
+                    {% if produtos.has_other_pages %}
+                          <ul class="pagination">
+                            {% if produtos.has_previous %}
+                              <li class="page-item">
+                                  <a class="page-link" href="?page={{ produtos.previous_page_number }}" aria-label="Previous">
+                                      <span aria-hidden="true">&laquo;</span>
+                                      <span class="sr-only">Anterior</span>
+                                  </a>
+                              </li>
+                            {% else %}
+                              <li class="page-item">
+                                  <a class="page-link" href="#" aria-label="Previous">
+                                      <span aria-hidden="true">&laquo;</span>
+                                      <span class="sr-only">Anterior</span>
+                                  </a>
+                              </li>
+                            {% endif %}
+                            {% for i in produtos.paginator.page_range %}
+                              {% if produtos.number == i %}
+                                <li class="page-item"><span class="page-link">{{ i }} <span></span></span></li>
+                              {% else %}
+                                <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                              {% endif %}
+                            {% endfor %}
+                            {% if produtos.has_next %}
+                              <li class="page-item">
+                                  <a class="page-link" href="?page={{ produtos.next_page_number }}" aria-label="Next">
+                                      <span aria-hidden="true">&raquo;</span>
+                                      <span class="sr-only">Próxima</span>
+                                  </a>
+                              </li>
+                            {% else %}
+                                <a class="page-link" href="#" aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                    <span class="sr-only">Próxima</span>
+                                </a>
+                            {% endif %}
+                          </ul>
+                    {% endif %}
+
+
 
                 </div>
         </form>

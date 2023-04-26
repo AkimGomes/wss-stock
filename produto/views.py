@@ -1,13 +1,39 @@
 from django.contrib import messages
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.shortcuts import render, redirect, get_object_or_404
 from produto.forms import CadastroProdutoForms, AtualizarProdutoForms
 from produto.models import Produto
 
 
 def index(request):
-    produtos = Produto.objects.all()
+    produtos_lista = Produto.objects.all()
+    page = request.GET.get("page", 1)
+
+    paginator = Paginator(produtos_lista, 10)
+
+    try:
+        produtos = paginator.page(page)
+    except PageNotAnInteger:
+        produtos = paginator.page(1)
+    except EmptyPage:
+        produtos = paginator.page(paginator.num_pages)
 
     return render(request, "produto/index.html", {"produtos": produtos})
+
+
+def buscar(request):
+    produtos = Produto.objects.filter(publicado=True)
+
+    if "buscar" in request.GET:
+        nome = request.GET.get("buscar")
+        if nome:
+            produtos = produtos.filter(nome__icontains=nome)
+
+            if not produtos:
+                messages.error(request, "Nenhum produto encontrado!")
+                return redirect("index")
+
+    return render(request, "produto/buscar.html", {"produtos": produtos})
 
 
 def atualizar_produto(request, id):

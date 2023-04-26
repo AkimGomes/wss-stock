@@ -1,4 +1,58 @@
-<h1>Index</h1>
-<div class="botao">
-    <a class="btn btn-success" href="{% url 'cadastro_produto' %}">Cadastrar Novo Produto</a>
-</div>
+{% load static %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Cadastro de Produto</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static '/produto.css' %}">
+</head>
+
+<body>
+    <header>
+        <div class="navbar fixed-top navbar-dark bg-dark shadow-sm">
+            <div class="container d-flex justify-content-between">
+                <a class="navbar-brand d-flex align-items-center" href="#">WSS-Stock</a>
+            </div>
+        </div>
+    </header>
+    <div class="container">
+        <form action="{% url 'index' %}" method="GET" >
+            <h1>Produtos</h1>
+                 {% for message in messages %}
+                    <div class="alert alert-primary">
+                        <p id="messages">{{ message }}</p>
+                    </div>
+                {% endfor %}
+                {% csrf_token %}
+                <div class="row">
+                    {% for produto in produtos %}
+
+                        <div class="row">
+                            <div class="col">
+                                <input type="text" class="form-control" placeholder="{{ produto.nome }}" readonly>
+                            </div>
+                            <div class="col">
+                                <input type="text" class="form-control" placeholder="{{ produto.tipo_produto }}" readonly>
+                            </div>
+                            <div class="col">
+                                <input type="text" class="form-control" placeholder="{{ produto.preco_venda }}" readonly>
+                            </div>
+                            <div class="col">
+                                <a class="btn btn-primary" href="{% url 'atualizar_produto' produto.id%}">Atualizar</a>
+                                <a class="btn btn-danger" href="{% url 'deletar_produto' produto.id%}">Excluir</a>
+                            </div>
+                        </div>
+
+                    {% endfor %}
+
+                    <div class="botao">
+                        <a class="btn btn-success btn-salvar" href="{% url 'cadastro_produto' %}">Cadastrar Novo Produto</a>
+                    </div>
+
+                </div>
+        </form>
+    </div>
+</body>

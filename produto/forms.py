@@ -27,6 +27,17 @@ class CadastroProdutoForms(forms.Form):
             }
         )
     )
+    quantidade = forms.IntegerField(
+        label="Quantidade do Produto",
+        required=True,
+        min_value=0,
+        widget=forms.NumberInput(
+            attrs={
+                "class": "form-control",
+                "placeholder": "Ex.: 10"
+            }
+        )
+    )
     preco_custo = forms.FloatField(
         label="Preço de compra do Produto",
         required=False,

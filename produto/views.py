@@ -2,7 +2,7 @@ from django.contrib import messages
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.shortcuts import render, redirect, get_object_or_404
 from produto.forms import CadastroProdutoForms, AtualizarProdutoForms
-from produto.models import Produto
+from produto.models import Produto, EstoqueProduto
 
 
 def index(request):
@@ -103,6 +103,7 @@ def cadastro_produto(request):
             preco_venda = form["preco_venda"].value()
             tipo_produto = form["tipo_produto"].value()
             descricao_tipo = form["descricao_tipo"].value()
+            quantidade = form["quantidade"].value()
 
             if Produto.objects.filter(nome=nome).exists():
                 messages.error(request, "Produto já cadastrado!")
@@ -117,6 +118,11 @@ def cadastro_produto(request):
                 descricao_tipo=descricao_tipo,
             )
             produto.save()
+            estoque_produto = EstoqueProduto(
+                id_produto=produto,
+                quantidade=quantidade
+            )
+            estoque_produto.save()
             messages.success(request, "Produto salvo com sucesso!")
             return redirect("index")
 

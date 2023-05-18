@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from produto.models import Produto
+from produto.models import Produto, EstoqueProduto
 
 
 class ListandoProdutos(admin.ModelAdmin):
@@ -13,3 +13,13 @@ class ListandoProdutos(admin.ModelAdmin):
 
 
 admin.site.register(Produto, ListandoProdutos)
+
+
+class ListandoEstoqueProduto(admin.ModelAdmin):
+    list_display = ("id", "quantidade")
+    list_display_links = ("id", "quantidade")
+    search_fields = ("id",)
+    list_per_page = 10
+
+
+admin.site.register(EstoqueProduto, ListandoEstoqueProduto)

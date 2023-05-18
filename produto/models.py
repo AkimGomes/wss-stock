@@ -13,3 +13,15 @@ class Produto(models.Model):
 
     def __str__(self):
         return self.nome
+
+
+class EstoqueProduto(models.Model):
+
+    id_produto = models.ForeignKey(
+        to=Produto,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=False,
+        related_name="id_produto",
+    )
+    quantidade = models.IntegerField(null=False, blank=False)

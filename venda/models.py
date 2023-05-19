@@ -24,7 +24,7 @@ class ProdutoVenda(models.Model):
 class Venda(models.Model):
     observacao = models.TextField(null=False, blank=False)
     data = models.DateTimeField(default=datetime.now(), blank=False)
-    preco_total = models.FloatField(null=False, blank=False, default=0.0)
+    preco_total = models.DecimalField(max_digits=8, decimal_places=2)
     produtos_venda = models.ManyToManyField(ProdutoVenda, blank=True)
 
 

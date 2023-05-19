@@ -1,9 +1,12 @@
-from django.shortcuts import redirect, render
-from django.forms import formset_factory
+from django.shortcuts import redirect, render, get_object_or_404
 
 from produto.models import EstoqueProduto
 from venda.forms import ProdutoVendaForm, VendaForm
 from venda.models import ProdutoVenda, Venda
+
+from django.forms import formset_factory
+
+from django.forms import formset_factory
 
 
 def criar_venda(request):
@@ -24,7 +27,7 @@ def criar_venda(request):
                     produto_venda.venda = venda
                     produto_venda.save()  # Salva cada objeto ProdutoVenda vinculado à venda
 
-                    total_preco += produto_venda.preco  # Adiciona o preço do ProdutoVenda ao preço total
+                    total_preco += produto_venda.produto_vendido.preco_venda * produto_venda.quantidade  # Calcula o preço total
 
                     # Retira a quantidade do estoque de produtos
                     id_produto = produto_venda.produto_vendido.id
@@ -46,3 +49,14 @@ def criar_venda(request):
         'venda_form': venda_form,
         'produto_venda_formset': produto_venda_formset,
     })
+
+
+def visualizar_vendas(request):
+    vendas = Venda.objects.all()
+    return render(request, 'produto/visualizar_vendas.html', {'vendas': vendas})
+
+
+def excluir_venda(request, venda_id):
+    venda = get_object_or_404(Venda, id=venda_id)
+    venda.delete()
+    return redirect('visualizar_vendas')

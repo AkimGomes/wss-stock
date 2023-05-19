@@ -18,6 +18,14 @@ class VendaForm(forms.ModelForm):
 
 
 class ProdutoVendaForm(forms.ModelForm):
+    class Meta:
+        model = ProdutoVenda
+        fields = '__all__'
+        widgets = {
+
+            'venda': forms.HiddenInput(),  # Campo oculto para o relacionamento com a venda
+        }
+
     def clean(self):
         cleaned_data = super().clean()
         produto = cleaned_data.get('produto_vendido')

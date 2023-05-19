@@ -26,7 +26,11 @@ class ProdutoVendaForm(forms.ModelForm):
         if produto and quantidade:
             estoque_produto = EstoqueProduto.objects.get(id_produto_id=produto.id)
             if quantidade > estoque_produto.quantidade:
-                raise forms.ValidationError(f'Quantidade insuficiente em estoque. Em estoque, {estoque_produto.quantidade}')
+                raise forms.ValidationError('Quantidade insuficiente em estoque.')
+
+        preco = produto.preco_venda * quantidade
+        preco = round(preco, 2)  # Arredonda para duas casas decimais
+        cleaned_data['preco'] = preco
 
         return cleaned_data
 
@@ -36,5 +40,6 @@ class ProdutoVendaForm(forms.ModelForm):
         widgets = {
             "produto_vendido": forms.Select(attrs={"class": "form-control"}),
             "quantidade": forms.NumberInput(attrs={"class": "form-control"}),
-            "preco": forms.NumberInput(attrs={"class": "form-control"}),
+            "preco": forms.NumberInput(attrs={"class": "form-control", "readonly": "readonly"}),
         }
+

@@ -14,6 +14,10 @@ class Produto(models.Model):
     def __str__(self):
         return self.nome
 
+    def get_quantidade_estoque(self):
+        estoque_produto = EstoqueProduto.objects.filter(id_produto=self.id).first()
+        return estoque_produto.quantidade if estoque_produto else 0
+
 
 class EstoqueProduto(models.Model):
 

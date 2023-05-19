@@ -46,6 +46,9 @@
                                 <input type="text" class="form-control" placeholder="{{ produto.preco_venda }}" readonly>
                             </div>
                             <div class="col">
+                                <input type="text" class="form-control" placeholder="{{ produto.get_quantidade_estoque }}" readonly>
+                            </div>
+                            <div class="col">
                                 <a class="btn btn-primary" href="{% url 'atualizar_produto' produto.id%}">Atualizar</a>
                                 <a class="btn btn-danger" href="{% url 'deletar_produto' produto.id%}">Excluir</a>
                             </div>

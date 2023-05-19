@@ -2,9 +2,7 @@ from django.shortcuts import redirect, render, get_object_or_404
 
 from produto.models import EstoqueProduto
 from venda.forms import ProdutoVendaForm, VendaForm
-from venda.models import ProdutoVenda, Venda
-
-from django.forms import formset_factory
+from venda.models import Venda
 
 from django.forms import formset_factory
 
@@ -60,3 +58,16 @@ def excluir_venda(request, venda_id):
     venda = get_object_or_404(Venda, id=venda_id)
     venda.delete()
     return redirect('visualizar_vendas')
+
+
+def venda_info(request, venda_id):
+    venda = get_object_or_404(Venda, id=venda_id)
+    produtos_venda = venda.produtos_venda.all()
+
+    context = {
+        'venda': venda,
+        'produtos_venda': produtos_venda,
+    }
+
+    return render(request, 'produto/venda_info.html', context)
+

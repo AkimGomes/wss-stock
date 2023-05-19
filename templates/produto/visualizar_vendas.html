@@ -37,6 +37,7 @@
                     <td>{{ venda.preco_total }}</td>
                     <td>
                     <a href="{% url 'excluir_venda' venda.id %}" class="btn btn-danger">Excluir</a>
+                    <a href="{% url 'venda_info' venda.id %}" class="btn btn-info">Info da Venda</a>
 
                     <!-- adicione mais colunas conforme necessário -->
                 </tr>

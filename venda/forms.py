@@ -5,15 +5,24 @@ from venda.models import Venda, ProdutoVenda
 
 
 class VendaForm(forms.ModelForm):
+    produtos_venda = forms.ModelMultipleChoiceField(
+        queryset=ProdutoVenda.objects.none(),
+        widget=forms.CheckboxSelectMultiple,
+        required=False,
+    )
 
     class Meta:
         model = Venda
-        fields = ['observacao', 'data', 'preco_total']
+        fields = ['observacao', 'data', 'preco_total', 'produtos_venda']
+
 
         widgets = {
             'observacao': forms.Textarea(attrs={'rows': 3, "class": "form-control"}),
             "data": forms.DateTimeInput(attrs={"class": "form-control"}),
-            "preco_total": forms.NumberInput(attrs={"class": "form-control"}),
+            "preco_total": forms.NumberInput(attrs={
+                "class": "form-control",
+                "readonly": "readonly",
+            }),
         }
 
 
@@ -48,6 +57,9 @@ class ProdutoVendaForm(forms.ModelForm):
         widgets = {
             "produto_vendido": forms.Select(attrs={"class": "form-control"}),
             "quantidade": forms.NumberInput(attrs={"class": "form-control"}),
-            "preco": forms.NumberInput(attrs={"class": "form-control", "readonly": "readonly"}),
+            "preco": forms.NumberInput(attrs={
+                "class": "form-control",
+                "readonly": "readonly",
+            }),
         }
 

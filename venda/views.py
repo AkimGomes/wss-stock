@@ -1,8 +1,8 @@
 from django.shortcuts import redirect, render, get_object_or_404
 from produto.models import EstoqueProduto
 from venda.forms import ProdutoVendaForm, VendaForm
-from venda.models import Venda
-from django.forms import formset_factory
+from venda.models import Venda, ProdutoVenda
+from django.forms import formset_factory, modelformset_factory
 
 
 def criar_venda(request):
@@ -18,14 +18,13 @@ def criar_venda(request):
             total_preco = 0  # Variable to store the total price
 
             for form in produto_venda_formset:
-                if form.has_changed():
+                if form.cleaned_data.get('produto_vendido') and form.cleaned_data.get('quantidade'):
                     produto_venda = form.save(commit=False)
                     produto_venda.venda = venda
-                    produto_venda.save()  # Save each ProdutoVenda object associated with the venda
+                    produto_venda.save()
 
-                    total_preco += produto_venda.produto_vendido.preco_venda * produto_venda.quantidade  # Calculate the total price
+                    total_preco += produto_venda.produto_vendido.preco_venda * produto_venda.quantidade
 
-                    # Subtract the quantity from the product inventory
                     id_produto = produto_venda.produto_vendido.id
                     quantidade = produto_venda.quantidade
 
@@ -33,8 +32,8 @@ def criar_venda(request):
                     estoque_produto.quantidade -= quantidade
                     estoque_produto.save()
 
-            venda.preco_total = total_preco  # Set the total price of the Venda
-            venda.save()  # Save the venda with the total price
+            venda.preco_total = total_preco
+            venda.save()
 
             return redirect('index')
     else:
@@ -45,7 +44,6 @@ def criar_venda(request):
         'venda_form': venda_form,
         'produto_venda_formset': produto_venda_formset,
     })
-
 
 
 def visualizar_vendas(request):
@@ -61,7 +59,7 @@ def excluir_venda(request, venda_id):
 
 def venda_info(request, venda_id):
     venda = get_object_or_404(Venda, id=venda_id)
-    produtos_venda = venda.produtovenda_set.all()
+    produtos_venda = ProdutoVenda.objects.filter(venda=venda).all()
 
     context = {
         'venda': venda,

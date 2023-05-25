@@ -43,9 +43,10 @@
             <div id="produtos-container">
                 {{ produto_venda_formset.management_form }}
                 <div id="produto-forms">
-                    {% for form in produto_venda_formset %}
+                    {% for form in produto_venda_formset.forms %}
                         <div class="produto-form">
                             {{ form.as_table }}
+                            <input type="hidden" name="{{ form.prefix }}-venda" value="{{ venda_form.instance.id }}">
                         </div>
                     {% endfor %}
                 </div>
@@ -63,6 +64,7 @@
             const adicionarProdutoLink = document.getElementById('adicionar-produto');
             const produtosContainer = document.getElementById('produtos-container');
             const produtosTotalField = document.getElementById('id_produtos_venda_total');
+            const vendaIdField = document.getElementById('id_venda');
 
             let formIndex = {{ produto_venda_formset.forms|length }};  // Define o valor inicial do formIndex
 
@@ -72,6 +74,7 @@
                 const formHtml = `
                     <div class="produto-form">
                         {{ produto_venda_formset.empty_form.as_table|safe }}
+                        <input type="hidden" name="produto_venda-${formIndex}-venda" value="{{ venda_form.instance.id }}">
                     </div>
                 `;
 
@@ -83,6 +86,24 @@
 
                 // Atualizar o valor do campo de total de produtos
                 produtosTotalField.value = formIndex + 1;
+
+                // Atualizar os atributos id, name e prefix dos campos do novo formulário
+                const fields = form.querySelectorAll('input, select, textarea');
+                fields.forEach(function(field) {
+                    const oldId = field.id;
+                    const newId = oldId.replace('id_form-0-', `id_form-${formIndex}-`);
+                    field.id = newId;
+
+                    const oldName = field.name;
+                    const newName = oldName.replace('form-0-', `form-${formIndex}-`);
+                    field.name = newName;
+
+                    if (field.hasAttribute('data-prefix')) {
+                        const oldPrefix = field.dataset.prefix;
+                        const newPrefix = oldPrefix.replace('form-0-', `form-${formIndex}-`);
+                        field.dataset.prefix = newPrefix;
+                    }
+                });
 
                 formIndex++;
             });

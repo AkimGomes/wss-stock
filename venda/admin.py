@@ -13,7 +13,7 @@ admin.site.register(Venda, ListandoVendas)
 
 
 class ListandoProdutoVenda(admin.ModelAdmin):
-    list_display = ("produto_vendido", "quantidade", "preco")
+    list_display = ("venda", "produto_vendido", "quantidade", "preco")
     list_display_links = ("produto_vendido", )
     search_fields = ("produto_vendido", )
     list_per_page = 10

@@ -55,7 +55,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for produto_venda in produtos_venda %}
+                        {% for produto_venda in venda.produtos_venda.all %}
                             <tr>
                                 <td>{{ produto_venda.produto_vendido.produto }}</td>
                                 <td>{{ produto_venda.quantidade }}</td>
@@ -67,7 +67,7 @@
             </div>
         </div>
 
-        <a class="btn btn-primary" href="{% url 'visualizar_vendas' %}">Voltar</a>
+        <a class="btn btn-primary" href="{% url 'index' %}">Voltar</a>
     </div>
 </body>
 </html>

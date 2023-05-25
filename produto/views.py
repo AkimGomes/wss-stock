@@ -38,44 +38,22 @@ def buscar(request):
 
 def atualizar_produto(request, id):
     produto = get_object_or_404(Produto, pk=id)
+    estoque_produto = EstoqueProduto.objects.get(id_produto=produto.id)
 
-    form = AtualizarProdutoForms(
-        initial={
-            "nome": produto.nome,
-            "descricao": produto.descricao,
-            "preco_custo": produto.preco_custo,
-            "preco_venda": produto.preco_venda,
-            "tipo_produto": produto.tipo_produto,
-            "descricao_tipo": produto.descricao_tipo,
-        }
-    )
+    form = AtualizarProdutoForms(instance=produto)
 
     if request.method == "POST":
-        form = AtualizarProdutoForms(request.POST)
+        form = AtualizarProdutoForms(request.POST, instance=produto)
 
         if form.is_valid():
+            form.save()
 
-            nome = form["nome"].value()
-            descricao = form["descricao"].value()
-            preco_custo = form["preco_custo"].value()
-            preco_venda = form["preco_venda"].value()
-            tipo_produto = form["tipo_produto"].value()
-            descricao_tipo = form["descricao_tipo"].value()
+            quantidade = form.cleaned_data.get("quantidade")
+            if quantidade is not None and quantidade != estoque_produto.quantidade:
+                estoque_produto.quantidade = quantidade
+                estoque_produto.save()
 
-            if nome != produto.nome:
-                produto.nome = nome
-            if descricao != produto.descricao:
-                produto.descricao = descricao
-            if preco_custo != produto.preco_custo:
-                produto.preco_custo = preco_custo
-            if preco_venda != produto.preco_venda:
-                produto.preco_venda = preco_venda
-            if tipo_produto != produto.tipo_produto:
-                produto.tipo_produto = tipo_produto
-            if descricao_tipo != produto.descricao_tipo:
-                produto.descricao_tipo = descricao_tipo
-            produto.save()
-            messages.success(request, "Produto salvo com sucesso!")
+            messages.success(request, "Produto atualizado com sucesso!")
             return redirect("index")
 
     return render(request, "produto/atualizar_produto.html", {"form": form})

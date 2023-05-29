@@ -39,6 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'produto.apps.ProdutoConfig',
     'venda.apps.VendaConfig',
+    'cliente.apps.ClienteConfig',
+    'orcamento.apps.OrcamentoConfig',
 ]
 
 MIDDLEWARE = [

@@ -27,35 +27,39 @@
                 </div>
             {% endfor %}
             {% csrf_token %}
+            <h3>Orçamento</h3>
             <div class="row">
                 {% for field in orcamento_form.visible_fields %}
-                    <div class="col-12 col-lg-12" style="margin-bottom: 10px">
-                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                        {{ field }}
+                    {% if field.name != 'cliente_orcamento' %}
+                        <div class="col-12 col-lg-12" style="margin-bottom: 10px">
+                            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                            {{ field }}
+                        </div>
                         {% for error in field.errors %}
                             <div class="alert alert-danger">
                                 {{ error }}
                             </div>
                         {% endfor %}
-                    </div>
+                    {% endif %}
                 {% endfor %}
             </div>
+            <h3>Cliente</h3>
             <div class="row">
-                {% for form in cliente_formset.forms %}
+                {% for field in cliente_form.visible_fields %}
                     <div class="col-12 col-lg-12" style="margin-bottom: 10px">
-                        <label for="{{ form.prefix }}-{{ forloop.counter0 }}-{{ form.nome_cliente.label }}">{{ form.nome_cliente.label }}</label>
-                        {{ form.nome_cliente }}
-                        {% for error in form.nome_cliente.errors %}
-                            <div class="alert alert-danger">
-                                {{ error }}
-                            </div>
-                        {% endfor %}
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
                     </div>
+                    {% for error in field.errors %}
+                        <div class="alert alert-danger">
+                            {{ error }}
+                        </div>
+                    {% endfor %}
                 {% endfor %}
             </div>
             <div class="botao">
                 <button type="submit" class="btn btn-success btn-salvar">Cadastrar</button>
-                <a class="btn btn-primary" href="{% url 'index' %}">Voltar</a>
+                <a class="btn btn-primary" href="{% url 'visualizar_orcamentos' %}">Voltar</a>
             </div>
         </form>
     </div>

@@ -24,13 +24,13 @@
             <thead>
                 <tr>
                     <th>Nome</th>
-                    <th>Descrição</th>
                     <th>Valor</th>
+                    <th>Cliente</th>
                     <th>Data do Orçamento</th>
                 </tr>
             </thead>
             <tbody>
-                {% for orcamento in page_obj %}
+                {% for orcamento in orcamentos %}
                 <tr>
                     <td>{{ orcamento.nome }}</td>
                     <td>{{ orcamento.valor_orcamento }}</td>
@@ -40,21 +40,6 @@
                 {% endfor %}
             </tbody>
         </table>
-        <div class="pagination">
-            <span class="step-links">
-                {% if page_obj.has_previous %}
-                    <a href="?page=1">&laquo; Primeira</a>
-                    <a href="?page={{ page_obj.previous_page_number }}">Anterior</a>
-                {% endif %}
-
-                <span class="current-page">{{ page_obj.number }}</span>
-
-                {% if page_obj.has_next %}
-                    <a href="?page={{ page_obj.next_page_number }}">Próxima</a>
-                    <a href="?page={{ page_obj.paginator.num_pages }}">Última &raquo;</a>
-                {% endif %}
-            </span>
-        </div>
         <div class="botao">
             <a href="{% url 'cadastrar_orcamento_cliente' %}" class="btn btn-success">Cadastrar Orçamento</a>
             <a class="btn btn-primary" href="{% url 'index' %}">Voltar</a>

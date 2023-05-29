@@ -69,6 +69,7 @@
                         <a class="btn btn-success btn-salvar" href="{% url 'cadastro_produto' %}">Cadastrar Novo Produto</a>
                         <a class="btn btn-warning" href="{% url 'criar_venda' %}">Cadastrar Nova Venda</a>
                         <a class="btn btn-dark" href="{% url 'visualizar_vendas' %}">Visualizar Vendas</a>
+                        <a class="btn btn-info" href="{% url 'visualizar_orcamentos' %}">Visualizar Orçamentos</a>
                     </div>
 
                     {% if produtos.has_other_pages %}
@@ -117,3 +118,4 @@
         </form>
     </div>
 </body>
+</html>

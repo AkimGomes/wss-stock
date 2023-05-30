@@ -1,6 +1,6 @@
 from django.core.paginator import Paginator
-from django.shortcuts import render, redirect
-
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
 from cliente.forms import ClienteForm
 from .forms import OrcamentoForm
 from .models import Orcamento, Cliente
@@ -15,7 +15,6 @@ def visualizar_orcamentos(request):
     }
 
     return render(request, 'produto/visualizar_orcamentos.html', context)
-
 
 
 def cadastrar_orcamento_cliente(request):
@@ -41,7 +40,21 @@ def cadastrar_orcamento_cliente(request):
     })
 
 
+def deletar_orcamento(request, id):
+    orcamento = get_object_or_404(Orcamento, pk=id)
+    orcamento.delete()
+    messages.success(request, "Orçamento excluído com sucesso!")
+
+    return redirect("visualizar_orcamentos")
 
 
+def orcamento_info(request, orcamento_id):
+    orcamento = get_object_or_404(Orcamento, id=orcamento_id)
+
+    context = {
+        "orcamento": orcamento,
+    }
+
+    return render(request, "produto/orcamento_info.html", context)
 
 

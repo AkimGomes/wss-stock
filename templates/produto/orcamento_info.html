@@ -1,0 +1,75 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Detalhes do Orçamento</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static '/produto.css' %}">
+</head>
+
+<body>
+    <header>
+        <div class="navbar fixed-top navbar-dark bg-dark shadow-sm">
+            <div class="container d-flex justify-content-between">
+                <a class="navbar-brand d-flex align-items-center" href="#">WSS-Stock</a>
+            </div>
+        </div>
+    </header>
+    <div class="container">
+        <h1>Detalhes do Orçamento</h1>
+        <h3>Informações do Orçamento</h3>
+        <table class="table table-striped">
+            <tbody>
+                <tr>
+                    <th>Nome</th>
+                    <td>{{ orcamento.nome }}</td>
+                </tr>
+                <tr>
+                    <th>Descrição</th>
+                    <td>{{ orcamento.descricao }}</td>
+                </tr>
+                <tr>
+                    <th>Cliente</th>
+                    <td>{{ orcamento.cliente_orcamento.nome }}</td>
+                </tr>
+                <tr>
+                    <th>Observação</th>
+                    <td>{{ orcamento.observacao }}</td>
+                </tr>
+                <tr>
+                    <th>Data do Orçamento</th>
+                    <td>{{ orcamento.data_orcamento }}</td>
+                </tr>
+                <tr>
+                    <th>Valor do Orçamento</th>
+                    <td>{{ orcamento.valor_orcamento }}</td>
+                </tr>
+            </tbody>
+        </table>
+        <h3>Informações do Cliente</h3>
+        <table class="table table-striped">
+            <tbody>
+                <tr>
+                    <th>Nome</th>
+                    <td>{{ orcamento.cliente_orcamento.nome }}</td>
+                </tr>
+                <tr>
+                    <th>Email</th>
+                    <td>{{ orcamento.cliente_orcamento.email }}</td>
+                </tr>
+                <tr>
+                    <th>Telefone</th>
+                    <td>{{ orcamento.cliente_orcamento.telefone_1 }}</td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="botao">
+            <a class="btn btn-primary" href="{% url 'visualizar_orcamentos' %}">Voltar</a>
+        </div>
+    </div>
+</body>
+
+</html>

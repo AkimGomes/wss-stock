@@ -27,6 +27,7 @@
                     <th>Valor</th>
                     <th>Cliente</th>
                     <th>Data do Orçamento</th>
+                    <th>Ações</th>
                 </tr>
             </thead>
             <tbody>
@@ -36,6 +37,13 @@
                     <td>{{ orcamento.valor_orcamento }}</td>
                     <td>{{ orcamento.cliente_orcamento }}</td>
                     <td>{{ orcamento.data_orcamento }}</td>
+                    <td>
+                        <a href="{% url 'orcamento_info' orcamento.id %}" class="btn btn-primary btn-sm">Ver Detalhes</a>
+                        <form action="{% url 'deletar_orcamento' orcamento.id %}" method="POST" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm">Excluir</button>
+                        </form>
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>

@@ -45,6 +45,7 @@
                     <td>{{ orcamento.data_orcamento }}</td>
                     <td>
                         <a href="{% url 'orcamento_info' orcamento.id %}" class="btn btn-primary btn-sm">Ver Detalhes</a>
+                        <a class="btn btn-warning btn-sm" href="{% url 'atualizar_orcamento' orcamento.id %}">Atualizar Orçamento</a>
                         <form action="{% url 'deletar_orcamento' orcamento.id %}" method="POST" style="display: inline;">
                             {% csrf_token %}
                             <button type="submit" class="btn btn-danger btn-sm">Excluir</button>

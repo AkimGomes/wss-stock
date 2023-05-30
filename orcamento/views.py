@@ -59,3 +59,17 @@ def orcamento_info(request, orcamento_id):
     return render(request, "produto/orcamento_info.html", context)
 
 
+def atualizar_orcamento(request, id):
+    orcamento = get_object_or_404(Orcamento, id=id)
+
+    if request.method == 'POST':
+        orcamento_form = OrcamentoForm(request.POST, instance=orcamento)
+        if orcamento_form.is_valid():
+            orcamento_form.save()
+            return redirect('visualizar_orcamentos')
+    else:
+        orcamento_form = OrcamentoForm(instance=orcamento)
+
+    return render(request, 'produto/atualizar_orcamento.html', {
+        'orcamento_form': orcamento_form,
+    })

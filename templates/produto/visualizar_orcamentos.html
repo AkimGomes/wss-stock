@@ -20,6 +20,12 @@
     </header>
     <div class="container">
         <h1>Lista de Orçamentos</h1>
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+        {% csrf_token %}
         <table class="table table-striped">
             <thead>
                 <tr>

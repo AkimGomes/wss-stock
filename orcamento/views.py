@@ -1,10 +1,8 @@
-from django.core.paginator import Paginator
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from cliente.forms import ClienteForm
 from .forms import OrcamentoForm
-from .models import Orcamento, Cliente
-from django.forms import modelformset_factory, modelform_factory
+from .models import Orcamento
 
 
 def visualizar_orcamentos(request):
@@ -23,12 +21,15 @@ def cadastrar_orcamento_cliente(request):
         cliente_form = ClienteForm(request.POST, prefix='cliente')
 
         if orcamento_form.is_valid() and cliente_form.is_valid():
-            cliente_instance = cliente_form.save()
             orcamento_instance = orcamento_form.save(commit=False)
+            cliente_instance = cliente_form.save()
             orcamento_instance.cliente_orcamento = cliente_instance
             orcamento_instance.save()
 
+            messages.success(request, 'Orçamento e Cliente cadastrados com sucesso!')
             return redirect('visualizar_orcamentos')
+        else:
+            messages.error(request, 'Preencha corretamente todos os campos.')
 
     else:
         orcamento_form = OrcamentoForm()

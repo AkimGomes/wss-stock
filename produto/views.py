@@ -1,107 +1,72 @@
-from django.contrib import messages
-from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from django.shortcuts import render, redirect, get_object_or_404
-from produto.forms import CadastroProdutoForms, AtualizarProdutoForms
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import viewsets, filters, status
+from rest_framework.decorators import action
+from rest_framework.response import Response
 from produto.models import Produto, EstoqueProduto
+from produto.serializers import ProdutoSerializer, EstoqueProdutoSerializer
 
 
-def index(request):
-    produtos_lista = Produto.objects.all()
-    page = request.GET.get("page", 1)
+class ProdutosViewSet(viewsets.ModelViewSet):
+    """
+    API de Produtos
+    """
+    queryset = Produto.objects.all()
+    filter_backends = [
+        DjangoFilterBackend,
+        filters.OrderingFilter,
+        filters.SearchFilter,
+    ]
+    ordering_fields = ["nome"]
+    search_fields = ["nome", "tipo_produto"]
+    serializer_class = ProdutoSerializer
 
-    paginator = Paginator(produtos_lista, 10)
+    def create(self, request):
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            response = Response(serializer.data, status=status.HTTP_201_CREATED)
+            id = str(serializer.data.get("id"))
+            response["Location"] = request.build_absolute_uri() + id
+            return response
 
-    try:
-        produtos = paginator.page(page)
-    except PageNotAnInteger:
-        produtos = paginator.page(1)
-    except EmptyPage:
-        produtos = paginator.page(paginator.num_pages)
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
 
-    return render(request, "produto/index.html", {"produtos": produtos})
+        quantidade = request.data.get("quantidade")
+        if quantidade is not None and quantidade != instance.estoque_produto.quantidade:
+            instance.estoque_produto.quantidade = quantidade
+            instance.estoque_produto.save()
 
+        return Response(serializer.data)
 
-def buscar(request):
-    produtos = Produto.objects.filter(publicado=True)
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
-    if "buscar" in request.GET:
-        nome = request.GET.get("buscar")
+    @action(detail=False, methods=['get'])
+    def buscar(self, request):
+        nome = self.request.query_params.get('buscar', None)
+        produtos = Produto.objects.filter(publicado=True)
+
         if nome:
             produtos = produtos.filter(nome__icontains=nome)
 
-            if not produtos:
-                messages.error(request, "Nenhum produto encontrado!")
-                return redirect("index")
+            if not produtos.exists():
+                return Response({"message": "Nenhum produto encontrado!"}, status=status.HTTP_404_NOT_FOUND)
 
-    return render(request, "produto/buscar.html", {"produtos": produtos})
-
-
-def atualizar_produto(request, id):
-    produto = get_object_or_404(Produto, pk=id)
-    estoque_produto = EstoqueProduto.objects.get(id_produto=produto.id)
-
-    form = AtualizarProdutoForms(instance=produto)
-
-    if request.method == "POST":
-        form = AtualizarProdutoForms(request.POST, instance=produto)
-
-        if form.is_valid():
-            form.save()
-
-            quantidade = form.cleaned_data.get("quantidade")
-            if quantidade is not None and quantidade != estoque_produto.quantidade:
-                estoque_produto.quantidade = quantidade
-                estoque_produto.save()
-
-            messages.success(request, "Produto atualizado com sucesso!")
-            return redirect("index")
-
-    return render(request, "produto/atualizar_produto.html", {"form": form})
+        serializer = self.get_serializer(produtos, many=True)
+        return Response(serializer.data)
 
 
-def deletar_produto(request, id):
-    produto = get_object_or_404(Produto, pk=id)
-    produto.delete()
-    messages.success(request, "Produto excluido com sucesso!")
+class EstoqueProdutoViewSet(viewsets.ModelViewSet):
+    """
+    API de EstoqueProduto
+    """
+    queryset = EstoqueProduto.objects.all()
+    serializer_class = EstoqueProdutoSerializer
 
-    return redirect("index")
-
-
-def cadastro_produto(request):
-    form = CadastroProdutoForms()
-
-    if request.method == "POST":
-        form = CadastroProdutoForms(request.POST)
-
-        if form.is_valid():
-
-            nome = form["nome"].value()
-            descricao = form["descricao"].value()
-            preco_custo = form["preco_custo"].value()
-            preco_venda = form["preco_venda"].value()
-            tipo_produto = form["tipo_produto"].value()
-            descricao_tipo = form["descricao_tipo"].value()
-            quantidade = form["quantidade"].value()
-
-            if Produto.objects.filter(nome=nome).exists():
-                messages.error(request, "Produto já cadastrado!")
-                return redirect("cadastro_produto")
-
-            produto = Produto(
-                nome=nome,
-                descricao=descricao,
-                preco_custo=preco_custo,
-                preco_venda=preco_venda,
-                tipo_produto=tipo_produto,
-                descricao_tipo=descricao_tipo,
-            )
-            produto.save()
-            estoque_produto = EstoqueProduto(
-                id_produto=produto,
-                quantidade=quantidade
-            )
-            estoque_produto.save()
-            messages.success(request, "Produto salvo com sucesso!")
-            return redirect("index")
-
-    return render(request, "produto/cadastro_produto.html", {"form": form})

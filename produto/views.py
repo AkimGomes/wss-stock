@@ -1,6 +1,7 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, filters, status
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from produto.models import Produto, EstoqueProduto
 from produto.serializers import ProdutoSerializer, EstoqueProdutoSerializer
@@ -10,6 +11,7 @@ class ProdutosViewSet(viewsets.ModelViewSet):
     """
     API de Produtos
     """
+    permission_classes = (IsAuthenticated,)
     queryset = Produto.objects.all()
     filter_backends = [
         DjangoFilterBackend,
@@ -67,6 +69,7 @@ class EstoqueProdutoViewSet(viewsets.ModelViewSet):
     """
     API de EstoqueProduto
     """
+    permission_classes = (IsAuthenticated,)
     queryset = EstoqueProduto.objects.all()
     serializer_class = EstoqueProdutoSerializer
 

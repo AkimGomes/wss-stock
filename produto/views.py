@@ -25,8 +25,19 @@ class ProdutosViewSet(viewsets.ModelViewSet):
     def create(self, request):
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
-            serializer.save()
-            response = Response(serializer.data, status=status.HTTP_201_CREATED)
+            produto_instance = serializer.save()
+
+            quantidade = request.data.get("quantidade", 0)
+            estoque_produto_instance = EstoqueProduto.objects.create(
+                id_produto=produto_instance, quantidade=quantidade
+            )
+
+            response_data = serializer.data
+            response_data["estoque_produto"] = EstoqueProdutoSerializer(
+                estoque_produto_instance
+            ).data
+
+            response = Response(response_data, status=status.HTTP_201_CREATED)
             id = str(serializer.data.get("id"))
             response["Location"] = request.build_absolute_uri() + id
             return response

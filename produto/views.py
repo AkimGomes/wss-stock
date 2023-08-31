@@ -12,7 +12,7 @@ class ProdutosViewSet(viewsets.ModelViewSet):
     API de Produtos
     """
     permission_classes = (IsAuthenticated,)
-    queryset = Produto.objects.all()
+    queryset = Produto.objects.all().order_by('id')
     filter_backends = [
         DjangoFilterBackend,
         filters.OrderingFilter,
@@ -81,6 +81,7 @@ class EstoqueProdutoViewSet(viewsets.ModelViewSet):
     API de EstoqueProduto
     """
     permission_classes = (IsAuthenticated,)
-    queryset = EstoqueProduto.objects.all()
+    queryset = EstoqueProduto.objects.all().order_by('id')
     serializer_class = EstoqueProdutoSerializer
+
 

@@ -2,7 +2,15 @@ from rest_framework import serializers, generics
 from produto.models import Produto, EstoqueProduto
 
 
+class EstoqueProdutoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = EstoqueProduto
+        fields = "__all__"
+
+
 class ProdutoSerializer(serializers.ModelSerializer):
+    estoque_produto = EstoqueProdutoSerializer(read_only=True)
+
     class Meta:
         model = Produto
         fields = "__all__"
@@ -22,8 +30,5 @@ class ProdutoSerializer(serializers.ModelSerializer):
         return data
 
 
-class EstoqueProdutoSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = EstoqueProduto
-        fields = "__all__"
+
 

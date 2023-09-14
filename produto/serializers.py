@@ -9,7 +9,7 @@ class EstoqueProdutoSerializer(serializers.ModelSerializer):
 
 
 class ProdutoSerializer(serializers.ModelSerializer):
-    estoque_produto = EstoqueProdutoSerializer(read_only=True)
+    quantidade = serializers.ReadOnlyField(source='estoque_produto.quantidade')
 
     class Meta:
         model = Produto

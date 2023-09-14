@@ -20,12 +20,14 @@ class Produto(models.Model):
 
 
 class EstoqueProduto(models.Model):
-
-    id_produto = models.ForeignKey(
-        to=Produto,
-        on_delete=models.SET_NULL,
+    produto = models.OneToOneField(
+        Produto,
+        on_delete=models.CASCADE,
         null=True,
-        blank=False,
-        related_name="id_produto",
+        related_name="estoque_produto",
     )
     quantidade = models.IntegerField(null=False, blank=False)
+
+    def __str__(self):
+        return f"Estoque do Produto: {self.produto.nome}"
+

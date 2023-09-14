@@ -29,7 +29,7 @@ class ProdutosViewSet(viewsets.ModelViewSet):
 
             quantidade = request.data.get("quantidade", 0)
             estoque_produto_instance = EstoqueProduto.objects.create(
-                id_produto=produto_instance, quantidade=quantidade
+                produto=produto_instance, quantidade=quantidade
             )
 
             response_data = serializer.data

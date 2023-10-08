@@ -34,24 +34,33 @@ class VendasViewSet(viewsets.ModelViewSet):
 
         produto_vendas = request.data.get('produtos_venda', [])
         venda.produtos_venda.clear()
+        estoque_insuficiente = False  # Variável para rastrear se há estoque insuficiente
 
         for produto_data in produto_vendas:
             produto_id = produto_data.get('produto_vendido')
             quantidade = produto_data.get('quantidade')
 
-            if produto_id and quantidade:
+            if produto_id and quantidade >= 0:
                 produto = Produto.objects.get(pk=produto_id)
-                produto_venda = ProdutoVenda.objects.create(
-                    produto_vendido=produto,
-                    quantidade=quantidade
-                )
-                venda.produtos_venda.add(produto_venda)
-
-                total_preco += produto_venda.preco
-
                 estoque_produto = EstoqueProduto.objects.get(produto=produto_id)
-                estoque_produto.quantidade -= quantidade
-                estoque_produto.save()
+
+                if quantidade <= estoque_produto.quantidade:
+                    produto_venda = ProdutoVenda.objects.create(
+                        produto_vendido=produto,
+                        quantidade=quantidade
+                    )
+                    venda.produtos_venda.add(produto_venda)
+
+                    total_preco += produto_venda.preco
+
+                    estoque_produto.quantidade -= quantidade
+                    estoque_produto.save()
+                else:
+                    estoque_insuficiente = True  # Marque como estoque insuficiente
+
+        if estoque_insuficiente:
+            venda.delete()  # Exclui a venda se houver estoque insuficiente
+            return Response({'detail': 'Não é possível, produto com baixo estoque.'}, status=status.HTTP_400_BAD_REQUEST)
 
         venda.preco_total = total_preco
         venda.save()

@@ -15,7 +15,7 @@ class Produto(models.Model):
         return self.nome
 
     def get_quantidade_estoque(self):
-        estoque_produto = EstoqueProduto.objects.filter(id_produto=self.id).first()
+        estoque_produto = EstoqueProduto.objects.filter(produto=self.id).first()
         return estoque_produto.quantidade if estoque_produto else 0
 
 

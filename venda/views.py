@@ -1,69 +1,77 @@
-# from django.shortcuts import redirect, render, get_object_or_404
-# from produto.models import EstoqueProduto
-# from venda.forms import ProdutoVendaForm, VendaForm
-# from venda.models import Venda, ProdutoVenda
-# from django.forms import formset_factory, modelformset_factory
-#
-#
-# def criar_venda(request):
-#     ProdutoVendaFormSet = formset_factory(ProdutoVendaForm, extra=1)
-#
-#     if request.method == 'POST':
-#         venda_form = VendaForm(request.POST)
-#         produto_venda_formset = ProdutoVendaFormSet(request.POST, prefix='produto')
-#
-#         if venda_form.is_valid() and produto_venda_formset.is_valid():
-#             venda = venda_form.save()  # Save the Venda object
-#
-#             total_preco = 0  # Variable to store the total price
-#
-#             for form in produto_venda_formset:
-#                 if form.cleaned_data.get('produto_vendido') and form.cleaned_data.get('quantidade'):
-#                     produto_venda = form.save(commit=False)
-#                     produto_venda.venda = venda
-#                     produto_venda.save()
-#
-#                     total_preco += produto_venda.produto_vendido.preco_venda * produto_venda.quantidade
-#
-#                     id_produto = produto_venda.produto_vendido.id
-#                     quantidade = produto_venda.quantidade
-#
-#                     estoque_produto = EstoqueProduto.objects.get(id_produto=id_produto)
-#                     estoque_produto.quantidade -= quantidade
-#                     estoque_produto.save()
-#
-#             venda.preco_total = total_preco
-#             venda.save()
-#
-#             return redirect('index')
-#     else:
-#         venda_form = VendaForm()
-#         produto_venda_formset = ProdutoVendaFormSet(prefix='produto')
-#
-#     return render(request, 'produto/venda_produto.html', {
-#         'venda_form': venda_form,
-#         'produto_venda_formset': produto_venda_formset,
-#     })
-#
-#
-# def visualizar_vendas(request):
-#     vendas = Venda.objects.all()
-#     return render(request, 'produto/visualizar_vendas.html', {'vendas': vendas})
-#
-#
-# def excluir_venda(request, venda_id):
-#     venda = get_object_or_404(Venda, id=venda_id)
-#     venda.delete()
-#     return redirect('visualizar_vendas')
-#
-#
-# def venda_info(request, venda_id):
-#     venda = get_object_or_404(Venda, id=venda_id)
-#     produtos_venda = ProdutoVenda.objects.filter(venda=venda).all()
-#
-#     context = {
-#         'venda': venda,
-#         'produtos_venda': produtos_venda,
-#     }
-#
-#     return render(request, 'produto/venda_info.html', context)
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import viewsets, filters, status
+from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+
+from produto.models import EstoqueProduto, Produto
+from venda.models import Venda, ProdutoVenda
+from venda.serializers import VendaSerializer
+
+
+class VendasViewSet(viewsets.ModelViewSet):
+    """
+    API de ProdutoVenda
+    """
+
+    permission_classes = (IsAuthenticated,)
+    queryset = Venda.objects.all().order_by('id')
+    filter_backends = [
+        DjangoFilterBackend,
+        filters.OrderingFilter,
+        filters.SearchFilter,
+    ]
+    ordering_fields = ["data"]
+    search_fields = ["data", "preco_total"]
+    serializer_class = VendaSerializer
+
+    def create(self, request, *args, **kwargs):
+        venda_serializer = self.get_serializer(data=request.data)
+        venda_serializer.is_valid(raise_exception=True)
+        venda = venda_serializer.save()
+
+        total_preco = 0
+
+        produto_vendas = request.data.get('produtos_venda', [])
+        venda.produtos_venda.clear()
+
+        for produto_data in produto_vendas:
+            produto_id = produto_data.get('produto_vendido')
+            quantidade = produto_data.get('quantidade')
+
+            if produto_id and quantidade:
+                produto = Produto.objects.get(pk=produto_id)
+                produto_venda = ProdutoVenda.objects.create(
+                    produto_vendido=produto,
+                    quantidade=quantidade
+                )
+                venda.produtos_venda.add(produto_venda)
+
+                total_preco += produto_venda.preco
+
+                estoque_produto = EstoqueProduto.objects.get(produto=produto_id)
+                estoque_produto.quantidade -= quantidade
+                estoque_produto.save()
+
+        venda.preco_total = total_preco
+        venda.save()
+
+        headers = self.get_success_headers(venda_serializer.data)
+        return Response(venda_serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @action(detail=True, methods=['get'])
+    def venda_info(self, request, pk=None):
+        venda = self.get_object()
+
+        venda_serializer = VendaSerializer(venda)
+
+        data = {
+            'venda': venda_serializer.data,
+        }
+        return Response(data, status=200)
+

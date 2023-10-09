@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, filters, status
 from rest_framework.decorators import action
@@ -83,5 +84,17 @@ class EstoqueProdutoViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
     queryset = EstoqueProduto.objects.all().order_by('id')
     serializer_class = EstoqueProdutoSerializer
+
+    @action(detail=True, methods=['get'])
+    def estoque_produto_por_produto(self, request, pk=None):
+        produto_id = self.kwargs.get('pk')
+
+        estoque_produto = get_object_or_404(EstoqueProduto, produto=produto_id)
+
+        # Serialize o objeto EstoqueProduto
+        serializer = EstoqueProdutoSerializer(estoque_produto)
+
+        # Retorne o JSON serializado
+        return Response(serializer.data)
 
 

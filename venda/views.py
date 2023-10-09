@@ -84,3 +84,17 @@ class VendasViewSet(viewsets.ModelViewSet):
         }
         return Response(data, status=200)
 
+    @action(detail=False, methods=['get'])
+    def buscar(self, request):
+        venda = self.request.query_params.get('buscar', None)
+        vendas = Venda.objects.all()
+
+        if venda:
+            vendas = vendas.filter(observacao__icontains=venda)
+
+            if not vendas.exists():
+                return Response({"message": "Nenhuma venda encontrada!"}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = self.get_serializer(vendas, many=True)
+        return Response(serializer.data)
+

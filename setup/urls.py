@@ -8,5 +8,5 @@ urlpatterns = [
     path("login/refresh", TokenRefreshView.as_view()),
     path('', include("produto.urls")),
     path('', include("venda.urls")),
-    # path('', include("orcamento.urls")),
+    path('', include("orcamento.urls")),
 ]

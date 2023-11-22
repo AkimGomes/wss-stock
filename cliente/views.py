@@ -16,7 +16,22 @@ class ClienteViewSet(viewsets.ModelViewSet):
     """
     permission_classes = (IsAuthenticated,)
     queryset = Cliente.objects.all().order_by('id')
+    filter_backends = [
+        DjangoFilterBackend,
+        filters.OrderingFilter,
+        filters.SearchFilter,
+    ]
+    ordering_fields = ["nome"]
+    search_fields = ["nome", "cpf"]
     serializer_class = ClienteSerializer
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        return Response(serializer.data)
 
     @action(detail=False, methods=['get'])
     def buscar(self, request):

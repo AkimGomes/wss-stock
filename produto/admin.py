@@ -16,7 +16,7 @@ admin.site.register(Produto, ListandoProdutos)
 
 
 class ListandoEstoqueProduto(admin.ModelAdmin):
-    list_display = ("id", "id_produto", "quantidade")
+    list_display = ("id", "quantidade")
     list_display_links = ("id", "quantidade")
     search_fields = ("id",)
     list_per_page = 10

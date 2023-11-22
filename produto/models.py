@@ -15,17 +15,19 @@ class Produto(models.Model):
         return self.nome
 
     def get_quantidade_estoque(self):
-        estoque_produto = EstoqueProduto.objects.filter(id_produto=self.id).first()
+        estoque_produto = EstoqueProduto.objects.filter(produto=self.id).first()
         return estoque_produto.quantidade if estoque_produto else 0
 
 
 class EstoqueProduto(models.Model):
-
-    id_produto = models.ForeignKey(
-        to=Produto,
-        on_delete=models.SET_NULL,
+    produto = models.OneToOneField(
+        Produto,
+        on_delete=models.CASCADE,
         null=True,
-        blank=False,
-        related_name="id_produto",
+        related_name="estoque_produto",
     )
     quantidade = models.IntegerField(null=False, blank=False)
+
+    def __str__(self):
+        return f"Estoque do Produto: {self.produto.nome}"
+

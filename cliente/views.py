@@ -36,13 +36,13 @@ class ClienteViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['get'])
     def buscar(self, request):
         nome = self.request.query_params.get('buscar', None)
-        orcamentos = Orcamento.objects.all()
+        clientes = Cliente.objects.all()
 
         if nome:
-            orcamentos = orcamentos.filter(nome__icontains=nome)
+            clientes = clientes.filter(nome__icontains=nome)
 
-            if not orcamentos.exists():
-                return Response({"message": "Nenhum orçamento encontrado!"}, status=status.HTTP_404_NOT_FOUND)
+            if not clientes.exists():
+                return Response({"message": "Nenhum cliente encontrado!"}, status=status.HTTP_404_NOT_FOUND)
 
-        serializer = self.get_serializer(orcamentos, many=True)
+        serializer = self.get_serializer(clientes, many=True)
         return Response(serializer.data)

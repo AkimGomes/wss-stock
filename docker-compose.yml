@@ -1,0 +1,13 @@
+version: '3'
+services:
+  wss-stock:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    container_name: wss-stock
+    image: wss-stock:latest
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    networks:
+      - default

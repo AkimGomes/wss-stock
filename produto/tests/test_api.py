@@ -93,9 +93,13 @@ class ProdutoTestCase(APITestCase):
             "preco_venda": 15.0,
             "tipo_produto": "Produto de mostruário",
             "descricao_tipo": "Produtos de mostruário são usados apenas de exemplo",
-            "quantidade": 100,
         }
 
         response = self.client.put(self.url_de_produto_detalhada, data=data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        produto_atualizado = Produto.objects.get()
+
+        self.assertEqual(produto_atualizado.nome, 'Produto de Teste ATUALIZADO')
+        self.assertEqual(produto_atualizado.descricao, 'Produto usado para realização de testes da API, atualização de Produto')
 

@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'venda',
     'orcamento',
     'cliente',
+    'drf_yasg',
 ]
 
 MIDDLEWARE = [

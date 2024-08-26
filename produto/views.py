@@ -13,7 +13,7 @@ class ProdutosViewSet(viewsets.ModelViewSet):
     API de Produtos
     """
     permission_classes = (IsAuthenticated,)
-    queryset = Produto.objects.all().order_by('id')
+    queryset = Produto.objects.all().order_by('nome')
     filter_backends = [
         DjangoFilterBackend,
         filters.OrderingFilter,

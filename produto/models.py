@@ -1,7 +1,10 @@
+import uuid
+
 from django.db import models
 
 
 class Produto(models.Model):
+    id = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True)
 
     nome = models.CharField(max_length=50, null=False, blank=False)
     descricao = models.TextField(null=False, blank=False)
@@ -20,6 +23,8 @@ class Produto(models.Model):
 
 
 class EstoqueProduto(models.Model):
+    id = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True)
+
     produto = models.OneToOneField(
         Produto,
         on_delete=models.CASCADE,

@@ -15,7 +15,7 @@ class VendasViewSet(viewsets.ModelViewSet):
     """
 
     permission_classes = (IsAuthenticated,)
-    queryset = Venda.objects.all().order_by('id')
+    queryset = Venda.objects.all().order_by('data')
     filter_backends = [
         DjangoFilterBackend,
         filters.OrderingFilter,

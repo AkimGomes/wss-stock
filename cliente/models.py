@@ -1,9 +1,12 @@
+import uuid
 from datetime import datetime
 
 from django.db import models
 
 
 class Cliente(models.Model):
+    id = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True)
+
     nome = models.CharField(max_length=255, null=True, blank=True)
     cpf = models.CharField(max_length=14, null=True, blank=True)  # Considerando o formato XXX.XXX.XXX-XX
     telefone_1 = models.CharField(max_length=15, null=True, blank=True)  # Considerando o formato DDD + número (exemplo: 11 99999-9999)

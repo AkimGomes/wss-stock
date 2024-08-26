@@ -1,3 +1,4 @@
+import uuid
 from datetime import datetime
 from django.db import models
 from django.db.models import Sum, F
@@ -6,6 +7,8 @@ from produto.models import Produto
 
 
 class ProdutoVenda(models.Model):
+    id = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True)
+
     produto_vendido = models.ForeignKey(
         to=Produto,
         on_delete=models.SET_NULL,
@@ -26,6 +29,8 @@ class ProdutoVenda(models.Model):
 
 
 class Venda(models.Model):
+    id = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True)
+
     observacao = models.TextField(null=False, blank=False)
     data = models.DateTimeField(default=datetime.now(), blank=False)
     preco_total = models.DecimalField(max_digits=8, decimal_places=2, default=0.0)

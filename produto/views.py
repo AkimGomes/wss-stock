@@ -11,9 +11,11 @@ from produto.repo.estoque_produto import (
 )
 from produto.repo.produto import RepoProdutoLeitura
 from produto.serializers import ProdutoSerializer, EstoqueProdutoSerializer
+from produto.services.estoque_produto import EstoqueProdutoService
 from produto.services.produto import ProdutoService
 
 produto_service = ProdutoService()
+estoque_produto_service = EstoqueProdutoService()
 
 
 class ProdutosViewSet(viewsets.ModelViewSet):
@@ -63,9 +65,7 @@ class ProdutosViewSet(viewsets.ModelViewSet):
         self.perform_update(serializer)
 
         quantidade = request.data.get("quantidade")
-        if quantidade is not None and quantidade != instance.estoque_produto.quantidade:
-            instance.estoque_produto.quantidade = quantidade
-            RepoEstoqueProdutoEscrita.salvar(estoque_produto=instance.estoque_produto)
+        estoque_produto_service.atualizar_estoque_de_produto_se_necessario(instance=instance, quantidade=quantidade)
 
         return Response(serializer.data)
 
@@ -79,7 +79,7 @@ class ProdutosViewSet(viewsets.ModelViewSet):
         nome = self.request.query_params.get("buscar", None)
 
         if nome:
-            produto = produto_service.consultar_produto_especifico(nome=nome)
+            produto = produto_service.consultar_produto_especifico_pelo_nome(nome=nome)
 
         serializer = self.get_serializer(produto, many=True)
         return Response(serializer.data)

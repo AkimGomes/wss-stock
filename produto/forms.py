@@ -14,7 +14,7 @@ class CadastroProdutoForms(forms.Form):
                 "class": "form-control",
                 "placeholder": "Ex.: Bateria A765 Brilhante",
             }
-        )
+        ),
     )
     descricao = forms.CharField(
         label="Descrição do Produto",
@@ -25,18 +25,15 @@ class CadastroProdutoForms(forms.Form):
                 "class": "form-control",
                 "placeholder": "Ex.: Bateria referente ao celular unicórnio",
             }
-        )
+        ),
     )
     quantidade = forms.IntegerField(
         label="Quantidade do Produto",
         required=True,
         min_value=0,
         widget=forms.NumberInput(
-            attrs={
-                "class": "form-control",
-                "placeholder": "Ex.: 10"
-            }
-        )
+            attrs={"class": "form-control", "placeholder": "Ex.: 10"}
+        ),
     )
     preco_custo = forms.FloatField(
         label="Preço de compra do Produto",
@@ -49,7 +46,7 @@ class CadastroProdutoForms(forms.Form):
                 "step": "0.01",
                 "placeholder": "Ex.: 1,99",
             }
-        )
+        ),
     )
     preco_venda = forms.FloatField(
         label="Preço de venda do Produto",
@@ -62,7 +59,7 @@ class CadastroProdutoForms(forms.Form):
                 "step": "0.01",
                 "placeholder": "Ex.: 1,99",
             }
-        )
+        ),
     )
     tipo_produto = forms.CharField(
         label="Tipo do Produto",
@@ -72,7 +69,7 @@ class CadastroProdutoForms(forms.Form):
                 "class": "form-control",
                 "placeholder": "Ex.: Bateria de Relógio",
             }
-        )
+        ),
     )
     descricao_tipo = forms.CharField(
         label="Descrição do Tipo do Produto",
@@ -83,21 +80,32 @@ class CadastroProdutoForms(forms.Form):
                 "class": "form-control",
                 "placeholder": "Escreva descrição do tipo do produto",
             }
-        )
+        ),
     )
 
 
 class AtualizarProdutoForms(forms.ModelForm):
     class Meta:
         model = Produto
-        fields = ['nome', 'descricao', 'preco_custo', 'preco_venda', 'tipo_produto', 'descricao_tipo']
+        fields = [
+            "nome",
+            "descricao",
+            "preco_custo",
+            "preco_venda",
+            "tipo_produto",
+            "descricao_tipo",
+        ]
         widgets = {
-            'nome': forms.TextInput(attrs={'class': 'form-control'}),
-            'descricao': forms.Textarea(attrs={'class': 'form-control'}),
-            'preco_custo': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
-            'preco_venda': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
-            'tipo_produto': forms.TextInput(attrs={'class': 'form-control'}),
-            'descricao_tipo': forms.Textarea(attrs={'class': 'form-control'}),
+            "nome": forms.TextInput(attrs={"class": "form-control"}),
+            "descricao": forms.Textarea(attrs={"class": "form-control"}),
+            "preco_custo": forms.NumberInput(
+                attrs={"class": "form-control", "step": "0.01"}
+            ),
+            "preco_venda": forms.NumberInput(
+                attrs={"class": "form-control", "step": "0.01"}
+            ),
+            "tipo_produto": forms.TextInput(attrs={"class": "form-control"}),
+            "descricao_tipo": forms.Textarea(attrs={"class": "form-control"}),
         }
 
     quantidade = forms.IntegerField(
@@ -107,18 +115,18 @@ class AtualizarProdutoForms(forms.ModelForm):
             attrs={
                 "class": "form-control",
             }
-        )
+        ),
     )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if self.instance.pk:
             estoque_produto = EstoqueProduto.objects.get(id_produto=self.instance.pk)
-            self.fields['quantidade'].initial = estoque_produto.quantidade
+            self.fields["quantidade"].initial = estoque_produto.quantidade
 
     def save(self, commit=True):
         instance = super().save(commit=False)
-        quantidade = self.cleaned_data['quantidade']
+        quantidade = self.cleaned_data["quantidade"]
         if instance.pk:
             estoque_produto = EstoqueProduto.objects.get(id_produto=instance.pk)
             estoque_produto.quantidade = quantidade
@@ -127,7 +135,3 @@ class AtualizarProdutoForms(forms.ModelForm):
             instance.save()
             EstoqueProduto.objects.create(id_produto=instance.pk, quantidade=quantidade)
         return instance
-
-
-
-

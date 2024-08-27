@@ -15,7 +15,7 @@ class VendasViewSet(viewsets.ModelViewSet):
     """
 
     permission_classes = (IsAuthenticated,)
-    queryset = Venda.objects.all().order_by('data')
+    queryset = Venda.objects.all().order_by("data")
     filter_backends = [
         DjangoFilterBackend,
         filters.OrderingFilter,
@@ -32,13 +32,15 @@ class VendasViewSet(viewsets.ModelViewSet):
 
         total_preco = 0
 
-        produto_vendas = request.data.get('produtos_venda', [])
+        produto_vendas = request.data.get("produtos_venda", [])
         venda.produtos_venda.clear()
-        estoque_insuficiente = False  # Variável para rastrear se há estoque insuficiente
+        estoque_insuficiente = (
+            False  # Variável para rastrear se há estoque insuficiente
+        )
 
         for produto_data in produto_vendas:
-            produto_id = produto_data.get('produto_vendido')
-            quantidade = produto_data.get('quantidade')
+            produto_id = produto_data.get("produto_vendido")
+            quantidade = produto_data.get("quantidade")
 
             if produto_id and quantidade >= 0:
                 produto = Produto.objects.get(pk=produto_id)
@@ -46,8 +48,7 @@ class VendasViewSet(viewsets.ModelViewSet):
 
                 if quantidade <= estoque_produto.quantidade:
                     produto_venda = ProdutoVenda.objects.create(
-                        produto_vendido=produto,
-                        quantidade=quantidade
+                        produto_vendido=produto, quantidade=quantidade
                     )
                     venda.produtos_venda.add(produto_venda)
 
@@ -60,41 +61,48 @@ class VendasViewSet(viewsets.ModelViewSet):
 
         if estoque_insuficiente:
             venda.delete()  # Exclui a venda se houver estoque insuficiente
-            return Response({'detail': 'Não é possível, produto com baixo estoque.'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"detail": "Não é possível, produto com baixo estoque."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         venda.preco_total = total_preco
         venda.save()
 
         headers = self.get_success_headers(venda_serializer.data)
-        return Response(venda_serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        return Response(
+            venda_serializer.data, status=status.HTTP_201_CREATED, headers=headers
+        )
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
         self.perform_destroy(instance)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-    @action(detail=True, methods=['get'])
+    @action(detail=True, methods=["get"])
     def venda_info(self, request, pk=None):
         venda = self.get_object()
 
         venda_serializer = VendaSerializer(venda)
 
         data = {
-            'venda': venda_serializer.data,
+            "venda": venda_serializer.data,
         }
         return Response(data, status=200)
 
-    @action(detail=False, methods=['get'])
+    @action(detail=False, methods=["get"])
     def buscar(self, request):
-        venda = self.request.query_params.get('buscar', None)
+        venda = self.request.query_params.get("buscar", None)
         vendas = Venda.objects.all()
 
         if venda:
             vendas = vendas.filter(observacao__icontains=venda)
 
             if not vendas.exists():
-                return Response({"message": "Nenhuma venda encontrada!"}, status=status.HTTP_404_NOT_FOUND)
+                return Response(
+                    {"message": "Nenhuma venda encontrada!"},
+                    status=status.HTTP_404_NOT_FOUND,
+                )
 
         serializer = self.get_serializer(vendas, many=True)
         return Response(serializer.data)
-

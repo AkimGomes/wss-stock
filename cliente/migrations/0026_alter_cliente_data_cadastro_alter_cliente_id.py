@@ -8,18 +8,22 @@ import uuid
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('cliente', '0025_alter_cliente_data_cadastro'),
+        ("cliente", "0025_alter_cliente_data_cadastro"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='cliente',
-            name='data_cadastro',
-            field=models.DateTimeField(default=datetime.datetime(2024, 8, 26, 14, 5, 14, 63564)),
+            model_name="cliente",
+            name="data_cadastro",
+            field=models.DateTimeField(
+                default=datetime.datetime(2024, 8, 26, 14, 5, 14, 63564)
+            ),
         ),
         migrations.AlterField(
-            model_name='cliente',
-            name='id',
-            field=models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False),
+            model_name="cliente",
+            name="id",
+            field=models.UUIDField(
+                default=uuid.uuid4, editable=False, primary_key=True, serialize=False
+            ),
         ),
     ]

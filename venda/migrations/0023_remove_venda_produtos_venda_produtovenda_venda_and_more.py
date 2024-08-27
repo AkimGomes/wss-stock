@@ -8,22 +8,26 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('venda', '0022_alter_venda_data'),
+        ("venda", "0022_alter_venda_data"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='venda',
-            name='produtos_venda',
+            model_name="venda",
+            name="produtos_venda",
         ),
         migrations.AddField(
-            model_name='produtovenda',
-            name='venda',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='venda.venda'),
+            model_name="produtovenda",
+            name="venda",
+            field=models.ForeignKey(
+                null=True, on_delete=django.db.models.deletion.CASCADE, to="venda.venda"
+            ),
         ),
         migrations.AlterField(
-            model_name='venda',
-            name='data',
-            field=models.DateTimeField(default=datetime.datetime(2023, 5, 25, 15, 34, 57, 693035)),
+            model_name="venda",
+            name="data",
+            field=models.DateTimeField(
+                default=datetime.datetime(2023, 5, 25, 15, 34, 57, 693035)
+            ),
         ),
     ]

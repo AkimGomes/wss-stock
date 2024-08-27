@@ -18,6 +18,8 @@ django-cors-headers = "^4.2.0"
 setuptools = "^72.1.0"
 pytest-django = "^4.8.0"
 drf-yasg = "^1.21.7"
+bson = "^0.5.10"
+black = "^24.8.0"
 
 
 [build-system]

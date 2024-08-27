@@ -7,20 +7,39 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Produto',
+            name="Produto",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('nome', models.CharField(max_length=50)),
-                ('descricao', models.TextField()),
-                ('preco_custo', models.CharField(max_length=50)),
-                ('preco_venda', models.CharField(max_length=50)),
-                ('tipo_produto', models.CharField(choices=[('BATERIA DE RELÓGIO', 'Bateria de Relógio'), ('PULSEIRA', 'Pulseira'), ('CABOS', 'Cabos'), ('CARREGADOR', 'Carregador')], default='', max_length=50)),
-                ('descricao_tipo', models.TextField()),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("nome", models.CharField(max_length=50)),
+                ("descricao", models.TextField()),
+                ("preco_custo", models.CharField(max_length=50)),
+                ("preco_venda", models.CharField(max_length=50)),
+                (
+                    "tipo_produto",
+                    models.CharField(
+                        choices=[
+                            ("BATERIA DE RELÓGIO", "Bateria de Relógio"),
+                            ("PULSEIRA", "Pulseira"),
+                            ("CABOS", "Cabos"),
+                            ("CARREGADOR", "Carregador"),
+                        ],
+                        default="",
+                        max_length=50,
+                    ),
+                ),
+                ("descricao_tipo", models.TextField()),
             ],
         ),
     ]

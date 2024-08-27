@@ -7,18 +7,20 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('venda', '0020_alter_venda_data_alter_venda_preco_total'),
+        ("venda", "0020_alter_venda_data_alter_venda_preco_total"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='venda',
-            name='data',
-            field=models.DateTimeField(default=datetime.datetime(2023, 5, 19, 15, 11, 32, 900939)),
+            model_name="venda",
+            name="data",
+            field=models.DateTimeField(
+                default=datetime.datetime(2023, 5, 19, 15, 11, 32, 900939)
+            ),
         ),
         migrations.AlterField(
-            model_name='venda',
-            name='preco_total',
+            model_name="venda",
+            name="preco_total",
             field=models.DecimalField(decimal_places=2, default=0.0, max_digits=8),
         ),
     ]

@@ -8,34 +8,43 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('cliente', '0007_alter_cliente_cpf_alter_cliente_data_cadastro_and_more'),
-        ('orcamento', '0006_alter_orcamento_data_orcamento_and_more'),
+        ("cliente", "0007_alter_cliente_cpf_alter_cliente_data_cadastro_and_more"),
+        ("orcamento", "0006_alter_orcamento_data_orcamento_and_more"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='orcamento',
-            name='cliente_orcamento',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='cliente.cliente'),
+            model_name="orcamento",
+            name="cliente_orcamento",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="cliente.cliente",
+            ),
         ),
         migrations.AlterField(
-            model_name='orcamento',
-            name='data_orcamento',
-            field=models.DateTimeField(default=datetime.datetime(2023, 5, 29, 21, 57, 37, 142239)),
+            model_name="orcamento",
+            name="data_orcamento",
+            field=models.DateTimeField(
+                default=datetime.datetime(2023, 5, 29, 21, 57, 37, 142239)
+            ),
         ),
         migrations.AlterField(
-            model_name='orcamento',
-            name='descricao',
+            model_name="orcamento",
+            name="descricao",
             field=models.TextField(blank=True, null=True),
         ),
         migrations.AlterField(
-            model_name='orcamento',
-            name='nome',
+            model_name="orcamento",
+            name="nome",
             field=models.CharField(blank=True, max_length=255, null=True),
         ),
         migrations.AlterField(
-            model_name='orcamento',
-            name='valor_orcamento',
-            field=models.DecimalField(blank=True, decimal_places=2, default=0.0, max_digits=8, null=True),
+            model_name="orcamento",
+            name="valor_orcamento",
+            field=models.DecimalField(
+                blank=True, decimal_places=2, default=0.0, max_digits=8, null=True
+            ),
         ),
     ]

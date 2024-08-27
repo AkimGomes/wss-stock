@@ -9,20 +9,34 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('cliente', '0001_initial'),
+        ("cliente", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Orcamento',
+            name="Orcamento",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('nome', models.CharField(max_length=255)),
-                ('descricao', models.TextField()),
-                ('observacao', models.TextField(blank=True)),
-                ('data_orcamento', models.DateTimeField()),
-                ('ativo_inativo', models.BooleanField(default=True)),
-                ('cliente_orcamento', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='cliente.cliente')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("nome", models.CharField(max_length=255)),
+                ("descricao", models.TextField()),
+                ("observacao", models.TextField(blank=True)),
+                ("data_orcamento", models.DateTimeField()),
+                ("ativo_inativo", models.BooleanField(default=True)),
+                (
+                    "cliente_orcamento",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="cliente.cliente",
+                    ),
+                ),
             ],
         ),
     ]

@@ -35,4 +35,3 @@ class EstoqueProduto(models.Model):
 
     def __str__(self):
         return f"Estoque do Produto: {self.produto.nome}"
-

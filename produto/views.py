@@ -4,7 +4,12 @@ from rest_framework import viewsets, filters, status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from produto.models import Produto, EstoqueProduto
+from produto.models import EstoqueProduto
+from produto.repositorios.estoque_produto import (
+    RepoEstoqueProdutoLeitura,
+    RepoEstoqueProdutoEscrita,
+)
+from produto.repositorios.produto import RepoProdutoLeitura
 from produto.serializers import ProdutoSerializer, EstoqueProdutoSerializer
 
 
@@ -12,8 +17,9 @@ class ProdutosViewSet(viewsets.ModelViewSet):
     """
     API de Produtos
     """
+
     permission_classes = (IsAuthenticated,)
-    queryset = Produto.objects.all().order_by('nome')
+    queryset = RepoProdutoLeitura.consultar_todos_os_produtos()
     filter_backends = [
         DjangoFilterBackend,
         filters.OrderingFilter,
@@ -29,8 +35,10 @@ class ProdutosViewSet(viewsets.ModelViewSet):
             produto_instance = serializer.save()
 
             quantidade = request.data.get("quantidade", 0)
-            estoque_produto_instance = EstoqueProduto.objects.create(
-                produto=produto_instance, quantidade=quantidade
+            estoque_produto_instance = (
+                RepoEstoqueProdutoEscrita.criar_estoque_de_produto(
+                    produto=produto_instance, quantidade=quantidade
+                )
             )
 
             response_data = serializer.data
@@ -44,7 +52,7 @@ class ProdutosViewSet(viewsets.ModelViewSet):
             return response
 
     def update(self, request, *args, **kwargs):
-        partial = kwargs.pop('partial', False)
+        partial = kwargs.pop("partial", False)
         instance = self.get_object()
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
@@ -53,7 +61,7 @@ class ProdutosViewSet(viewsets.ModelViewSet):
         quantidade = request.data.get("quantidade")
         if quantidade is not None and quantidade != instance.estoque_produto.quantidade:
             instance.estoque_produto.quantidade = quantidade
-            instance.estoque_produto.save()
+            RepoEstoqueProdutoEscrita.salvar(estoque_produto=instance.estoque_produto)
 
         return Response(serializer.data)
 
@@ -62,18 +70,19 @@ class ProdutosViewSet(viewsets.ModelViewSet):
         self.perform_destroy(instance)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-    @action(detail=False, methods=['get'])
+    @action(detail=False, methods=["get"])
     def buscar(self, request):
-        nome = self.request.query_params.get('buscar', None)
-        produtos = Produto.objects.filter(publicado=True)
+        nome = self.request.query_params.get("buscar", None)
 
         if nome:
-            produtos = produtos.filter(nome__icontains=nome)
+            produto = RepoProdutoLeitura.consultar_produto_pelo_nome(nome=nome)
+            if not produto:
+                return Response(
+                    {"message": "Nenhum produto encontrado!"},
+                    status=status.HTTP_404_NOT_FOUND,
+                )
 
-            if not produtos.exists():
-                return Response({"message": "Nenhum produto encontrado!"}, status=status.HTTP_404_NOT_FOUND)
-
-        serializer = self.get_serializer(produtos, many=True)
+        serializer = self.get_serializer(produto, many=True)
         return Response(serializer.data)
 
 
@@ -81,13 +90,14 @@ class EstoqueProdutoViewSet(viewsets.ModelViewSet):
     """
     API de EstoqueProduto
     """
+
     permission_classes = (IsAuthenticated,)
-    queryset = EstoqueProduto.objects.all().order_by('id')
+    queryset = RepoEstoqueProdutoLeitura.consultar_todos_os_estoques_de_produtos()
     serializer_class = EstoqueProdutoSerializer
 
-    @action(detail=True, methods=['get'])
+    @action(detail=True, methods=["get"])
     def estoque_produto_por_produto(self, request, pk=None):
-        produto_id = self.kwargs.get('pk')
+        produto_id = self.kwargs.get("pk")
 
         estoque_produto = get_object_or_404(EstoqueProduto, produto=produto_id)
 
@@ -96,5 +106,3 @@ class EstoqueProdutoViewSet(viewsets.ModelViewSet):
 
         # Retorne o JSON serializado
         return Response(serializer.data)
-
-

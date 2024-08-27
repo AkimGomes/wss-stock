@@ -8,18 +8,22 @@ import uuid
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('orcamento', '0025_alter_orcamento_data_orcamento'),
+        ("orcamento", "0025_alter_orcamento_data_orcamento"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='orcamento',
-            name='data_orcamento',
-            field=models.DateTimeField(default=datetime.datetime(2024, 8, 26, 14, 5, 14, 63860)),
+            model_name="orcamento",
+            name="data_orcamento",
+            field=models.DateTimeField(
+                default=datetime.datetime(2024, 8, 26, 14, 5, 14, 63860)
+            ),
         ),
         migrations.AlterField(
-            model_name='orcamento',
-            name='id',
-            field=models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False),
+            model_name="orcamento",
+            name="id",
+            field=models.UUIDField(
+                default=uuid.uuid4, editable=False, primary_key=True, serialize=False
+            ),
         ),
     ]

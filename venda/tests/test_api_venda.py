@@ -10,13 +10,17 @@ class VendaTestCase(APITestCase):
 
     def setUp(self):
         # Criar um usuário de teste
-        self.user = User.objects.create_user(username='usuario_test', password='senha_test')
+        self.user = User.objects.create_user(
+            username="usuario_test", password="senha_test"
+        )
 
         token = self.obter_token()  # Obter token de autenticação
-        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + token) # Configurar as credenciais para usar o token
+        self.client.credentials(
+            HTTP_AUTHORIZATION="Bearer " + token
+        )  # Configurar as credenciais para usar o token
 
         # Criando os dados necessários para os testes de Produto
-        self.list_url = reverse('Vendas-list')
+        self.list_url = reverse("Vendas-list")
         self.produto = Produto.objects.create(
             nome="Produto de Teste",
             descricao="Produto usado para realização de testes da API",
@@ -34,18 +38,17 @@ class VendaTestCase(APITestCase):
             preco_total=12.00,
         )
         self.venda.produtos_venda.add(self.produto_venda)
-        self.url_de_venda_detalhada = reverse('Vendas-detail', args=[self.venda.id])
-
+        self.url_de_venda_detalhada = reverse("Vendas-detail", args=[self.venda.id])
 
     def obter_token(self):
         """
         Obtém um token de acesso JWT para o usuário de teste
         """
-        response = self.client.post(reverse('token_obtain_pair'), {
-            'username': 'usuario_test',
-            'password': 'senha_test'
-        })
-        return response.data['access']
+        response = self.client.post(
+            reverse("token_obtain_pair"),
+            {"username": "usuario_test", "password": "senha_test"},
+        )
+        return response.data["access"]
 
     def test_requisicao_get_para_listar_vendas(self):
         """
@@ -58,7 +61,7 @@ class VendaTestCase(APITestCase):
         """
         Teste para verificar se a requisição POST está criando uma venda
         """
-        Venda.objects.all().delete() # Limpa os dados de Venda para garantir consistência
+        Venda.objects.all().delete()  # Limpa os dados de Venda para garantir consistência
 
         data = {
             "observacao": "Venda do Cliente Josias teste de POST",
@@ -68,7 +71,9 @@ class VendaTestCase(APITestCase):
         response = self.client.post(self.list_url, data=data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Venda.objects.count(), 1)
-        self.assertEqual(Venda.objects.get().observacao, 'Venda do Cliente Josias teste de POST')
+        self.assertEqual(
+            Venda.objects.get().observacao, "Venda do Cliente Josias teste de POST"
+        )
 
     def test_requisicao_delete_para_deletar_venda(self):
         """
@@ -97,6 +102,7 @@ class VendaTestCase(APITestCase):
 
         venda_atualizada = Venda.objects.get()
 
-        self.assertEqual(venda_atualizada.observacao, 'Venda do Cliente Josias teste de ATUALIZAÇÃO')
+        self.assertEqual(
+            venda_atualizada.observacao, "Venda do Cliente Josias teste de ATUALIZAÇÃO"
+        )
         self.assertEqual(venda_atualizada.preco_total, 48.00)
-

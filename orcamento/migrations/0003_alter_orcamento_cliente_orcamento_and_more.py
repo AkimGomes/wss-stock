@@ -8,19 +8,25 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('cliente', '0003_alter_cliente_data_cadastro'),
-        ('orcamento', '0002_orcamento_valor_orcamento_and_more'),
+        ("cliente", "0003_alter_cliente_data_cadastro"),
+        ("orcamento", "0002_orcamento_valor_orcamento_and_more"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='orcamento',
-            name='cliente_orcamento',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='cliente.cliente'),
+            model_name="orcamento",
+            name="cliente_orcamento",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="cliente.cliente",
+            ),
         ),
         migrations.AlterField(
-            model_name='orcamento',
-            name='data_orcamento',
-            field=models.DateTimeField(default=datetime.datetime(2023, 5, 29, 21, 49, 35, 861562)),
+            model_name="orcamento",
+            name="data_orcamento",
+            field=models.DateTimeField(
+                default=datetime.datetime(2023, 5, 29, 21, 49, 35, 861562)
+            ),
         ),
     ]

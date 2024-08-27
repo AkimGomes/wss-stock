@@ -10,4 +10,3 @@ class OrcamentoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Orcamento
         fields = "__all__"
-

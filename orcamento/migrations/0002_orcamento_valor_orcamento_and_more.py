@@ -7,18 +7,20 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('orcamento', '0001_initial'),
+        ("orcamento", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='orcamento',
-            name='valor_orcamento',
+            model_name="orcamento",
+            name="valor_orcamento",
             field=models.DecimalField(decimal_places=2, default=0.0, max_digits=8),
         ),
         migrations.AlterField(
-            model_name='orcamento',
-            name='data_orcamento',
-            field=models.DateTimeField(default=datetime.datetime(2023, 5, 29, 15, 24, 33, 782783)),
+            model_name="orcamento",
+            name="data_orcamento",
+            field=models.DateTimeField(
+                default=datetime.datetime(2023, 5, 29, 15, 24, 33, 782783)
+            ),
         ),
     ]

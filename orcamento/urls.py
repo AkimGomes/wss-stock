@@ -6,6 +6,4 @@ from orcamento.views import OrcamentoViewSet
 router = routers.DefaultRouter()
 router.register("orcamento", OrcamentoViewSet, basename="Orcamento")
 
-urlpatterns = [
-    path("", include(router.urls))
-]
+urlpatterns = [path("", include(router.urls))]

@@ -7,18 +7,31 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('venda', '0001_initial'),
+        ("venda", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Venda',
+            name="Venda",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('observacao', models.TextField()),
-                ('data', models.DateTimeField(default=datetime.datetime(2023, 5, 18, 19, 45, 38, 724951))),
-                ('preco_total', models.FloatField(default=0.0)),
-                ('produtos_venda', models.ManyToManyField(to='venda.produtovenda')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("observacao", models.TextField()),
+                (
+                    "data",
+                    models.DateTimeField(
+                        default=datetime.datetime(2023, 5, 18, 19, 45, 38, 724951)
+                    ),
+                ),
+                ("preco_total", models.FloatField(default=0.0)),
+                ("produtos_venda", models.ManyToManyField(to="venda.produtovenda")),
             ],
         ),
     ]

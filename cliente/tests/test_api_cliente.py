@@ -9,30 +9,36 @@ class ClienteTestCase(APITestCase):
 
     def setUp(self):
         # Criar um usuário de teste
-        self.user = User.objects.create_user(username='usuario_test', password='senha_test')
+        self.user = User.objects.create_user(
+            username="usuario_test", password="senha_test"
+        )
 
         token = self.obter_token()  # Obter token de autenticação
-        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + token) # Configurar as credenciais para usar o token
+        self.client.credentials(
+            HTTP_AUTHORIZATION="Bearer " + token
+        )  # Configurar as credenciais para usar o token
 
         # Criando os dados necessários para os testes de Cliente
-        self.list_url = reverse('Cliente-list')
+        self.list_url = reverse("Cliente-list")
         self.cliente = Cliente.objects.create(
             nome="Cliente de Teste",
             cpf="12345678900",
             telefone_1="11912345678",
             email="teste@teste.com",
         )
-        self.url_de_cliente_detalhada = reverse('Cliente-detail', args=[self.cliente.id])
+        self.url_de_cliente_detalhada = reverse(
+            "Cliente-detail", args=[self.cliente.id]
+        )
 
     def obter_token(self):
         """
         Obtém um token de acesso JWT para o usuário de teste
         """
-        response = self.client.post(reverse('token_obtain_pair'), {
-            'username': 'usuario_test',
-            'password': 'senha_test'
-        })
-        return response.data['access']
+        response = self.client.post(
+            reverse("token_obtain_pair"),
+            {"username": "usuario_test", "password": "senha_test"},
+        )
+        return response.data["access"]
 
     def test_requisicao_get_para_listar_clientes(self):
         """
@@ -45,7 +51,7 @@ class ClienteTestCase(APITestCase):
         """
         Teste para verificar se a requisição POST está criando um cliente
         """
-        Cliente.objects.all().delete() # Limpa os dados de Clientes para garantir consistência
+        Cliente.objects.all().delete()  # Limpa os dados de Clientes para garantir consistência
 
         data = {
             "nome": "Cliente de Teste para POST",
@@ -56,7 +62,7 @@ class ClienteTestCase(APITestCase):
         response = self.client.post(self.list_url, data=data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Cliente.objects.count(), 1)
-        self.assertEqual(Cliente.objects.get().nome, 'Cliente de Teste para POST')
+        self.assertEqual(Cliente.objects.get().nome, "Cliente de Teste para POST")
 
     def test_requisicao_delete_para_deletar_cliente(self):
         """
@@ -87,6 +93,5 @@ class ClienteTestCase(APITestCase):
 
         cliente_atualizado = Cliente.objects.get()
 
-        self.assertEqual(cliente_atualizado.nome, 'Cliente de Teste ATUALIZADO')
-        self.assertEqual(cliente_atualizado.cpf, '00000000011')
-
+        self.assertEqual(cliente_atualizado.nome, "Cliente de Teste ATUALIZADO")
+        self.assertEqual(cliente_atualizado.cpf, "00000000011")

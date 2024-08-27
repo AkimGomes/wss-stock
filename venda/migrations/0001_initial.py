@@ -9,17 +9,33 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('produto', '0012_alter_estoqueproduto_id_produto'),
+        ("produto", "0012_alter_estoqueproduto_id_produto"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='ProdutoVenda',
+            name="ProdutoVenda",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('quantidade', models.IntegerField()),
-                ('preco', models.FloatField(default=0.0)),
-                ('produto_vendido', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='produto', to='produto.produto')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("quantidade", models.IntegerField()),
+                ("preco", models.FloatField(default=0.0)),
+                (
+                    "produto_vendido",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="produto",
+                        to="produto.produto",
+                    ),
+                ),
             ],
         ),
     ]

@@ -7,28 +7,30 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('orcamento', '0003_alter_orcamento_cliente_orcamento_and_more'),
+        ("orcamento", "0003_alter_orcamento_cliente_orcamento_and_more"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='orcamento',
-            name='data_orcamento',
-            field=models.DateTimeField(default=datetime.datetime(2023, 5, 29, 21, 51, 14, 166819)),
+            model_name="orcamento",
+            name="data_orcamento",
+            field=models.DateTimeField(
+                default=datetime.datetime(2023, 5, 29, 21, 51, 14, 166819)
+            ),
         ),
         migrations.AlterField(
-            model_name='orcamento',
-            name='descricao',
+            model_name="orcamento",
+            name="descricao",
             field=models.TextField(null=True),
         ),
         migrations.AlterField(
-            model_name='orcamento',
-            name='nome',
+            model_name="orcamento",
+            name="nome",
             field=models.CharField(max_length=255, null=True),
         ),
         migrations.AlterField(
-            model_name='orcamento',
-            name='observacao',
+            model_name="orcamento",
+            name="observacao",
             field=models.TextField(blank=True, null=True),
         ),
     ]

@@ -9,7 +9,7 @@ class EstoqueProdutoSerializer(serializers.ModelSerializer):
 
 
 class ProdutoSerializer(serializers.ModelSerializer):
-    quantidade = serializers.ReadOnlyField(source='estoque_produto.quantidade')
+    quantidade = serializers.ReadOnlyField(source="estoque_produto.quantidade")
 
     class Meta:
         model = Produto
@@ -17,18 +17,12 @@ class ProdutoSerializer(serializers.ModelSerializer):
 
     @staticmethod
     def validate(data):
-        nome = data.get('nome', None)
+        nome = data.get("nome", None)
 
         if not nome:
-            raise serializers.ValidationError(
-                {"nome": "Campo obrigatóŕio faltando."}
-            )
+            raise serializers.ValidationError({"nome": "Campo obrigatóŕio faltando."})
         elif Produto.objects.filter(nome=nome).exists():
             raise serializers.ValidationError(
                 {"nome": "O nome do produto já está cadastrado"}
             )
         return data
-
-
-
-

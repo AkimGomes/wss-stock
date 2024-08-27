@@ -25,7 +25,7 @@ class ProdutoVenda(models.Model):
         return 0.0
 
     def __str__(self):
-        return f'{self.produto_vendido} - Quantidade: {self.quantidade}'
+        return f"{self.produto_vendido} - Quantidade: {self.quantidade}"
 
 
 class Venda(models.Model):
@@ -37,6 +37,4 @@ class Venda(models.Model):
     produtos_venda = models.ManyToManyField(ProdutoVenda, related_name="vendas")
 
     def __str__(self):
-        return f'Venda - Data: {self.data}'
-
-
+        return f"Venda - Data: {self.data}"

@@ -5,11 +5,11 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from produto.models import EstoqueProduto
-from produto.repositorios.estoque_produto import (
+from produto.repo.estoque_produto import (
     RepoEstoqueProdutoLeitura,
     RepoEstoqueProdutoEscrita,
 )
-from produto.repositorios.produto import RepoProdutoLeitura
+from produto.repo.produto import RepoProdutoLeitura
 from produto.serializers import ProdutoSerializer, EstoqueProdutoSerializer
 
 

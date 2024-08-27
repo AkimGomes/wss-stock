@@ -1,16 +1,14 @@
 from django.contrib.auth.models import User
-from rest_framework.authtoken.models import Token
 from rest_framework.test import APITestCase
 from django.urls import reverse
-from produto.models import Produto, EstoqueProduto
 from rest_framework import status
 
-from produto.repositorios.estoque_produto import (
+from produto.repo.estoque_produto import (
     RepoEstoqueProdutoLeituraTeste,
     RepoEstoqueProdutoEscritaTeste,
     RepoEstoqueProdutoEscrita,
 )
-from produto.repositorios.produto import (
+from produto.repo.produto import (
     RepoProdutoEscritaTeste,
     RepoProdutoLeituraTeste,
 )

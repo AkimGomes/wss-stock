@@ -11,6 +11,9 @@ from produto.repo.estoque_produto import (
 )
 from produto.repo.produto import RepoProdutoLeitura
 from produto.serializers import ProdutoSerializer, EstoqueProdutoSerializer
+from produto.services.produto import ProdutoService
+
+produto_service = ProdutoService()
 
 
 class ProdutosViewSet(viewsets.ModelViewSet):
@@ -28,6 +31,7 @@ class ProdutosViewSet(viewsets.ModelViewSet):
     ordering_fields = ["nome"]
     search_fields = ["nome", "tipo_produto"]
     serializer_class = ProdutoSerializer
+
 
     def create(self, request):
         serializer = self.serializer_class(data=request.data)
@@ -75,12 +79,7 @@ class ProdutosViewSet(viewsets.ModelViewSet):
         nome = self.request.query_params.get("buscar", None)
 
         if nome:
-            produto = RepoProdutoLeitura.consultar_produto_pelo_nome(nome=nome)
-            if not produto:
-                return Response(
-                    {"message": "Nenhum produto encontrado!"},
-                    status=status.HTTP_404_NOT_FOUND,
-                )
+            produto = produto_service.consultar_produto_especifico(nome=nome)
 
         serializer = self.get_serializer(produto, many=True)
         return Response(serializer.data)

@@ -3,12 +3,13 @@ from rest_framework import viewsets, filters, status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-
-from cliente.models import Cliente
-from cliente.serializers import ClienteSerializer
-from orcamento.models import Orcamento
-from orcamento.repo.orcamento import RepoOrcamentoLeitura, RepoOrcamentoEscrita
+from cliente.services.cliente import ClienteService
+from orcamento.repo.orcamento import RepoOrcamentoLeitura
 from orcamento.serializers import OrcamentoSerializer
+from orcamento.services.orcamento import OrcamentoService
+
+orcamento_service = OrcamentoService()
+cliente_service = ClienteService()
 
 
 class OrcamentoViewSet(viewsets.ModelViewSet):
@@ -30,28 +31,9 @@ class OrcamentoViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         orcamento_data = request.data
 
-        # Primeiro, crie o orçamento sem um cliente associado
-        orcamento_serializer = OrcamentoSerializer(data=orcamento_data)
-        if orcamento_serializer.is_valid():
-            orcamento_instance = RepoOrcamentoEscrita.salvar_serializer(orcamento_serializer=orcamento_serializer)
-        else:
-            return Response(
-                orcamento_serializer.errors, status=status.HTTP_400_BAD_REQUEST
-            )
-
-        # Em seguida, crie o cliente associado ao orçamento
-        cliente_data = orcamento_data.get("cliente_orcamento")
-        if cliente_data:
-            cliente_serializer = ClienteSerializer(data=cliente_data)
-            if cliente_serializer.is_valid():
-                cliente_instance = cliente_serializer.save()
-                orcamento_instance.cliente_orcamento = cliente_instance
-                RepoOrcamentoEscrita.salvar(orcamento=orcamento_instance)
-            else:
-                RepoOrcamentoEscrita.deletar(orcamento=orcamento_instance)
-                return Response(
-                    cliente_serializer.errors, status=status.HTTP_400_BAD_REQUEST
-                )
+        if orcamento_data.get("cliente_orcamento"):
+            orcamento_serializer = OrcamentoSerializer(data=orcamento_data)
+            orcamento_service.criar_orcamento(orcamento_serializer=orcamento_serializer)
 
         return Response(orcamento_serializer.data, status=status.HTTP_201_CREATED)
 
@@ -66,7 +48,7 @@ class OrcamentoViewSet(viewsets.ModelViewSet):
         serializer = OrcamentoSerializer(instance, data=request.data, partial=partial)
 
         if serializer.is_valid():
-            RepoOrcamentoEscrita.salvar_serializer(orcamento_serializer=serializer)
+            serializer.save()
 
             # Compare os dados antes e depois da atualização
             updated_data = serializer.data

@@ -5,6 +5,11 @@ from orcamento.models import Orcamento
 from cliente.models import Cliente
 from rest_framework import status
 
+from orcamento.repo.orcamento import (
+    RepoOrcamentoEscritaTeste,
+    RepoOrcamentoLeituraTeste,
+)
+
 
 class OrcamentoTestCase(APITestCase):
 
@@ -27,13 +32,14 @@ class OrcamentoTestCase(APITestCase):
             telefone_1="11912345678",
             email="teste@teste.com",
         )
-        self.orcamento = Orcamento.objects.create(
+        self.orcamento = RepoOrcamentoEscritaTeste.criar_orcamento(
             nome="Orçamento de Teste",
             descricao="Orçamento usado para realização de testes da API",
             cliente_orcamento=self.cliente,
             observacao="Produto requer manutenção",
             valor_orcamento=200.0,
         )
+
         self.url_de_orcamento_detalhada = reverse(
             "Orcamento-detail", args=[self.orcamento.id]
         )
@@ -59,18 +65,32 @@ class OrcamentoTestCase(APITestCase):
         """
         Teste para verificar se a requisição POST está criando um orçamento
         """
-        Orcamento.objects.all().delete()  # Limpa os dados de Orçamento para garantir consistência
+        RepoOrcamentoEscritaTeste.deletar_todos_os_orcamentos()  # Limpa os dados de Orçamento para garantir consistência
 
         data = {
-            "nome": "Orçamento de Teste para POST",
-            "descricao": "Orçamento usado para realização de testes da API POST",
-            "observacao": "Orçamento requer manutenção geral",
+            "nome": "Orçamento de Teste",
+            "descricao": "Descrição do orçamento de teste.",
+            "observacao": "Observação sobre o orçamento.",
+            "cliente_orcamento": {
+                "nome": "Cliente de Teste",
+                "cpf": "12345678900",
+                "telefone_1": "11912345678",
+                "email": "cliente@teste.com",
+            },
             "valor_orcamento": 300.0,
         }
-        response = self.client.post(self.list_url, data=data)
+        response = self.client.post(self.list_url, data=data, format="json")
+
+        orcamento = RepoOrcamentoLeituraTeste.consultar_orcamento_pelo_nome(
+            nome="Orçamento de Teste"
+        )
+        quantidade_de_orcamentos = (
+            RepoOrcamentoLeituraTeste.contar_todos_os_orcamentos()
+        )
+
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(Orcamento.objects.count(), 1)
-        self.assertEqual(Orcamento.objects.get().nome, "Orçamento de Teste para POST")
+        self.assertEqual(quantidade_de_orcamentos, 1)
+        self.assertEqual(orcamento.nome, "Orçamento de Teste")
 
     def test_requisicao_delete_para_deletar_orcamento(self):
         """
@@ -99,7 +119,9 @@ class OrcamentoTestCase(APITestCase):
         response = self.client.put(self.url_de_orcamento_detalhada, data=data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        orcamento_atualizado = Orcamento.objects.get()
+        orcamento_atualizado = (
+            RepoOrcamentoLeituraTeste.consultar_unico_objeto_existente()
+        )
 
         self.assertEqual(orcamento_atualizado.nome, "Orçamento de Teste ATUALIZADO")
         self.assertEqual(

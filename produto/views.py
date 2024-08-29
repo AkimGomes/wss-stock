@@ -34,7 +34,6 @@ class ProdutosViewSet(viewsets.ModelViewSet):
     search_fields = ["nome", "tipo_produto"]
     serializer_class = ProdutoSerializer
 
-
     def create(self, request):
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
@@ -65,7 +64,9 @@ class ProdutosViewSet(viewsets.ModelViewSet):
         self.perform_update(serializer)
 
         quantidade = request.data.get("quantidade")
-        estoque_produto_service.atualizar_estoque_de_produto_se_necessario(instance=instance, quantidade=quantidade)
+        estoque_produto_service.atualizar_estoque_de_produto_se_necessario(
+            instance=instance, quantidade=quantidade
+        )
 
         return Response(serializer.data)
 

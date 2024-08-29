@@ -4,8 +4,10 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
+from cliente.models import Cliente
 from cliente.serializers import ClienteSerializer
 from orcamento.models import Orcamento
+from orcamento.repo.orcamento import RepoOrcamentoLeitura, RepoOrcamentoEscrita
 from orcamento.serializers import OrcamentoSerializer
 
 
@@ -15,7 +17,7 @@ class OrcamentoViewSet(viewsets.ModelViewSet):
     """
 
     permission_classes = (IsAuthenticated,)
-    queryset = Orcamento.objects.filter(ativo_inativo=True).order_by("data_orcamento")
+    queryset = RepoOrcamentoLeitura.consultar_orcamentos_ativos()
     filter_backends = [
         DjangoFilterBackend,
         filters.OrderingFilter,
@@ -31,7 +33,7 @@ class OrcamentoViewSet(viewsets.ModelViewSet):
         # Primeiro, crie o orçamento sem um cliente associado
         orcamento_serializer = OrcamentoSerializer(data=orcamento_data)
         if orcamento_serializer.is_valid():
-            orcamento_instance = orcamento_serializer.save()
+            orcamento_instance = RepoOrcamentoEscrita.salvar_serializer(orcamento_serializer=orcamento_serializer)
         else:
             return Response(
                 orcamento_serializer.errors, status=status.HTTP_400_BAD_REQUEST
@@ -44,10 +46,9 @@ class OrcamentoViewSet(viewsets.ModelViewSet):
             if cliente_serializer.is_valid():
                 cliente_instance = cliente_serializer.save()
                 orcamento_instance.cliente_orcamento = cliente_instance
-                orcamento_instance.save()
+                RepoOrcamentoEscrita.salvar(orcamento=orcamento_instance)
             else:
-                # Se houver erros de validação, você pode excluir o orçamento recém-criado
-                orcamento_instance.delete()
+                RepoOrcamentoEscrita.deletar(orcamento=orcamento_instance)
                 return Response(
                     cliente_serializer.errors, status=status.HTTP_400_BAD_REQUEST
                 )
@@ -65,7 +66,7 @@ class OrcamentoViewSet(viewsets.ModelViewSet):
         serializer = OrcamentoSerializer(instance, data=request.data, partial=partial)
 
         if serializer.is_valid():
-            serializer.save()
+            RepoOrcamentoEscrita.salvar_serializer(orcamento_serializer=serializer)
 
             # Compare os dados antes e depois da atualização
             updated_data = serializer.data
@@ -86,10 +87,9 @@ class OrcamentoViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=["get"])
     def buscar(self, request):
         nome = self.request.query_params.get("buscar", None)
-        orcamentos = Orcamento.objects.all()
 
         if nome:
-            orcamentos = orcamentos.filter(nome__icontains=nome)
+            orcamentos = RepoOrcamentoLeitura.consultar_orcamento_pelo_nome(nome=nome)
 
             if not orcamentos.exists():
                 return Response(

@@ -22,10 +22,6 @@ class RepoOrcamentoLeitura:
 class RepoOrcamentoEscrita:
 
     @staticmethod
-    def salvar_serializer(orcamento_serializer: OrcamentoSerializer):
-        return orcamento_serializer.save()
-
-    @staticmethod
     def salvar(orcamento: Orcamento):
         orcamento.save()
 

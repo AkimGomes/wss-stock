@@ -5,8 +5,6 @@ from rest_framework.response import Response
 
 from cliente.models import Cliente
 from cliente.repo.cliente import RepoClienteLeitura
-from orcamento.models import Orcamento
-from orcamento.repo.orcamento import RepoOrcamentoLeitura, RepoOrcamentoEscrita
 
 
 class ClienteService:

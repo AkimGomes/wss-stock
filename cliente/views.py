@@ -1,13 +1,15 @@
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import viewsets, filters, status
+from rest_framework import viewsets, filters
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from cliente.models import Cliente
+from cliente.repo.cliente import RepoClienteLeitura
 from cliente.serializers import ClienteSerializer
-from orcamento.models import Orcamento
-from orcamento.serializers import OrcamentoSerializer
+from cliente.services.cliente import ClienteService
+
+cliente_service = ClienteService()
 
 
 class ClienteViewSet(viewsets.ModelViewSet):
@@ -16,7 +18,7 @@ class ClienteViewSet(viewsets.ModelViewSet):
     """
 
     permission_classes = (IsAuthenticated,)
-    queryset = Cliente.objects.all().order_by("id")
+    queryset = RepoClienteLeitura.consultar_clientes_ordenados_pela_data_de_cadastro()
     filter_backends = [
         DjangoFilterBackend,
         filters.OrderingFilter,
@@ -37,16 +39,9 @@ class ClienteViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=["get"])
     def buscar(self, request):
         nome = self.request.query_params.get("buscar", None)
-        clientes = Cliente.objects.all()
 
         if nome:
-            clientes = clientes.filter(nome__icontains=nome)
-
-            if not clientes.exists():
-                return Response(
-                    {"message": "Nenhum cliente encontrado!"},
-                    status=status.HTTP_404_NOT_FOUND,
-                )
+            clientes = cliente_service.consultar_cliente_especifico_pelo_nome(nome=nome)
 
         serializer = self.get_serializer(clientes, many=True)
         return Response(serializer.data)

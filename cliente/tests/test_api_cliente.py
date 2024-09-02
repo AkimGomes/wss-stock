@@ -4,6 +4,8 @@ from django.urls import reverse
 from cliente.models import Cliente
 from rest_framework import status
 
+from cliente.repo.cliente import RepoClienteEscritaTeste, RepoClienteLeituraTeste
+
 
 class ClienteTestCase(APITestCase):
 
@@ -20,7 +22,7 @@ class ClienteTestCase(APITestCase):
 
         # Criando os dados necessários para os testes de Cliente
         self.list_url = reverse("Cliente-list")
-        self.cliente = Cliente.objects.create(
+        self.cliente = RepoClienteEscritaTeste.criar_cliente(
             nome="Cliente de Teste",
             cpf="12345678900",
             telefone_1="11912345678",
@@ -51,7 +53,7 @@ class ClienteTestCase(APITestCase):
         """
         Teste para verificar se a requisição POST está criando um cliente
         """
-        Cliente.objects.all().delete()  # Limpa os dados de Clientes para garantir consistência
+        RepoClienteEscritaTeste.deletar_todos_os_clientes()  # Limpa os dados de Clientes para garantir consistência
 
         data = {
             "nome": "Cliente de Teste para POST",
@@ -60,9 +62,12 @@ class ClienteTestCase(APITestCase):
             "email": "teste@teste.com",
         }
         response = self.client.post(self.list_url, data=data)
+
+        cliente = RepoClienteLeituraTeste.consultar_unico_objeto_existente()
+
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(Cliente.objects.count(), 1)
-        self.assertEqual(Cliente.objects.get().nome, "Cliente de Teste para POST")
+        self.assertEqual(RepoClienteLeituraTeste.contar_todos_os_clientes(), 1)
+        self.assertEqual(cliente.nome, "Cliente de Teste para POST")
 
     def test_requisicao_delete_para_deletar_cliente(self):
         """
@@ -91,7 +96,7 @@ class ClienteTestCase(APITestCase):
         response = self.client.put(self.url_de_cliente_detalhada, data=data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        cliente_atualizado = Cliente.objects.get()
+        cliente_atualizado = RepoClienteLeituraTeste.consultar_unico_objeto_existente()
 
         self.assertEqual(cliente_atualizado.nome, "Cliente de Teste ATUALIZADO")
         self.assertEqual(cliente_atualizado.cpf, "00000000011")

@@ -41,3 +41,31 @@ class RepoVendaEscrita:
             quantidade=quantidade,
         )
         return venda
+
+
+class RepoVendaEscritaTeste:
+
+    @staticmethod
+    def criar_venda(observacao: str, preco_total: float) -> Venda:
+        venda = Venda.objects.create(
+            observacao=observacao,
+            preco_total=preco_total,
+        )
+        return venda
+
+    @staticmethod
+    def deletar_todos_as_vendas():
+        Venda.objects.all().delete()
+
+
+class RepoVendaLeituraTeste:
+
+    @staticmethod
+    def consultar_unico_objeto_existente():
+        venda = Venda.objects.get()
+        return venda
+
+    @staticmethod
+    def contar_todos_as_vendas():
+        quantidade_de_vendas = Venda.objects.count()
+        return quantidade_de_vendas

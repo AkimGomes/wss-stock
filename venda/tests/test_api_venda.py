@@ -2,8 +2,12 @@ from django.contrib.auth.models import User
 from rest_framework.test import APITestCase
 from django.urls import reverse
 from produto.models import Produto
+from produto.repo.produto import RepoProdutoEscritaTeste
 from venda.models import Venda, ProdutoVenda
 from rest_framework import status
+
+from venda.repo.produto_venda import RepoProdutoVendaEscrita
+from venda.repo.venda import RepoVendaEscritaTeste, RepoVendaLeituraTeste
 
 
 class VendaTestCase(APITestCase):
@@ -21,7 +25,7 @@ class VendaTestCase(APITestCase):
 
         # Criando os dados necessários para os testes de Produto
         self.list_url = reverse("Vendas-list")
-        self.produto = Produto.objects.create(
+        self.produto = RepoProdutoEscritaTeste.criar_produto(
             nome="Produto de Teste",
             descricao="Produto usado para realização de testes da API",
             preco_custo=10.0,
@@ -29,14 +33,15 @@ class VendaTestCase(APITestCase):
             tipo_produto="Produto de mostruário",
             descricao_tipo="Produtos de mostruário são usados apenas de exemplo",
         )
-        self.produto_venda = ProdutoVenda.objects.create(
+        self.produto_venda = RepoProdutoVendaEscrita.criar_produto_venda(
             produto_vendido=self.produto,
             quantidade=10,
         )
-        self.venda = Venda.objects.create(
+        self.venda = RepoVendaEscritaTeste.criar_venda(
             observacao="Venda do Cliente Josias",
             preco_total=12.00,
         )
+
         self.venda.produtos_venda.add(self.produto_venda)
         self.url_de_venda_detalhada = reverse("Vendas-detail", args=[self.venda.id])
 
@@ -61,19 +66,19 @@ class VendaTestCase(APITestCase):
         """
         Teste para verificar se a requisição POST está criando uma venda
         """
-        Venda.objects.all().delete()  # Limpa os dados de Venda para garantir consistência
+        RepoVendaEscritaTeste.deletar_todos_as_vendas()  # Limpa os dados de Venda para garantir consistência
 
         data = {
             "observacao": "Venda do Cliente Josias teste de POST",
             "preco_total": 24.00,
         }
-
         response = self.client.post(self.list_url, data=data)
+
+        venda = RepoVendaLeituraTeste.consultar_unico_objeto_existente()
+
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(Venda.objects.count(), 1)
-        self.assertEqual(
-            Venda.objects.get().observacao, "Venda do Cliente Josias teste de POST"
-        )
+        self.assertEqual(RepoVendaLeituraTeste.contar_todos_as_vendas(), 1)
+        self.assertEqual(venda.observacao, "Venda do Cliente Josias teste de POST")
 
     def test_requisicao_delete_para_deletar_venda(self):
         """
@@ -100,7 +105,7 @@ class VendaTestCase(APITestCase):
         response = self.client.put(self.url_de_venda_detalhada, data=data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        venda_atualizada = Venda.objects.get()
+        venda_atualizada = RepoVendaLeituraTeste.consultar_unico_objeto_existente()
 
         self.assertEqual(
             venda_atualizada.observacao, "Venda do Cliente Josias teste de ATUALIZAÇÃO"

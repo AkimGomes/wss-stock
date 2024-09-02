@@ -3,13 +3,11 @@ from rest_framework import viewsets, filters, status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from cliente.services.cliente import ClienteService
 from orcamento.repo.orcamento import RepoOrcamentoLeitura
 from orcamento.serializers import OrcamentoSerializer
 from orcamento.services.orcamento import OrcamentoService
 
 orcamento_service = OrcamentoService()
-cliente_service = ClienteService()
 
 
 class OrcamentoViewSet(viewsets.ModelViewSet):
@@ -40,26 +38,11 @@ class OrcamentoViewSet(viewsets.ModelViewSet):
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop("partial", False)
         instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
 
-        # Primeiro, serialize o objeto existente para verificar as mudanças
-        existing_data = OrcamentoSerializer(instance).data
-
-        # Em seguida, serialize os dados da solicitação
-        serializer = OrcamentoSerializer(instance, data=request.data, partial=partial)
-
-        if serializer.is_valid():
-            serializer.save()
-
-            # Compare os dados antes e depois da atualização
-            updated_data = serializer.data
-            if existing_data != updated_data:
-                return Response(updated_data, status=status.HTTP_200_OK)
-
-            return Response(
-                {"message": "Nenhum dado foi alterado."}, status=status.HTTP_200_OK
-            )
-
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.data)
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -71,13 +54,9 @@ class OrcamentoViewSet(viewsets.ModelViewSet):
         nome = self.request.query_params.get("buscar", None)
 
         if nome:
-            orcamentos = RepoOrcamentoLeitura.consultar_orcamento_pelo_nome(nome=nome)
-
-            if not orcamentos.exists():
-                return Response(
-                    {"message": "Nenhum orçamento encontrado!"},
-                    status=status.HTTP_404_NOT_FOUND,
-                )
+            orcamentos = orcamento_service.consultar_orcamento_especifico_pelo_nome(
+                nome=nome
+            )
 
         serializer = self.get_serializer(orcamentos, many=True)
         return Response(serializer.data)

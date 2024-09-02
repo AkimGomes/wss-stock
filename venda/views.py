@@ -5,7 +5,13 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from produto.models import EstoqueProduto, Produto
+from produto.repo.estoque_produto import (
+    RepoEstoqueProdutoLeitura,
+    RepoEstoqueProdutoEscrita,
+)
+from produto.repo.produto import RepoProdutoLeitura
 from venda.models import Venda, ProdutoVenda
+from venda.repo.venda import RepoVendaLeitura, RepoVendaEscrita
 from venda.serializers import VendaSerializer
 
 
@@ -16,6 +22,7 @@ class VendasViewSet(viewsets.ModelViewSet):
 
     permission_classes = (IsAuthenticated,)
     queryset = Venda.objects.all().order_by("data")
+    queryset = RepoVendaLeitura.consultar_vendas_ordenada_pela_data_de_cadastro()
     filter_backends = [
         DjangoFilterBackend,
         filters.OrderingFilter,
@@ -43,31 +50,36 @@ class VendasViewSet(viewsets.ModelViewSet):
             quantidade = produto_data.get("quantidade")
 
             if produto_id and quantidade >= 0:
-                produto = Produto.objects.get(pk=produto_id)
-                estoque_produto = EstoqueProduto.objects.get(produto=produto_id)
+                produto = RepoProdutoLeitura.consultar_produto_pelo_id(id=produto_id)
+                estoque_produto = (
+                    RepoEstoqueProdutoLeitura.consultar_estoque_produto_pelo_produto(
+                        produto=produto_id
+                    )
+                )
 
                 if quantidade <= estoque_produto.quantidade:
-                    produto_venda = ProdutoVenda.objects.create(
-                        produto_vendido=produto, quantidade=quantidade
+                    produto_venda = RepoVendaEscrita.criar_venda(
+                        produto_vendido=produto,
+                        quantidade=quantidade,
                     )
                     venda.produtos_venda.add(produto_venda)
 
                     total_preco += produto_venda.preco
 
                     estoque_produto.quantidade -= quantidade
-                    estoque_produto.save()
+                    RepoEstoqueProdutoEscrita.salvar(estoque_produto=estoque_produto)
                 else:
                     estoque_insuficiente = True  # Marque como estoque insuficiente
 
         if estoque_insuficiente:
-            venda.delete()  # Exclui a venda se houver estoque insuficiente
+            RepoVendaEscrita.deletar(venda=venda)
             return Response(
                 {"detail": "Não é possível, produto com baixo estoque."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
         venda.preco_total = total_preco
-        venda.save()
+        RepoVendaEscrita.salvar(venda=venda)
 
         headers = self.get_success_headers(venda_serializer.data)
         return Response(
@@ -93,10 +105,9 @@ class VendasViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=["get"])
     def buscar(self, request):
         venda = self.request.query_params.get("buscar", None)
-        vendas = Venda.objects.all()
 
         if venda:
-            vendas = vendas.filter(observacao__icontains=venda)
+            vendas = RepoVendaLeitura.consultar_venda_pela_observacao(observacao=venda)
 
             if not vendas.exists():
                 return Response(

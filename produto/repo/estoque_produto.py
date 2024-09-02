@@ -1,9 +1,16 @@
+from uuid import UUID
+
 from django.db.models import QuerySet
 
 from produto.models import EstoqueProduto, Produto
 
 
 class RepoEstoqueProdutoLeitura:
+
+    @staticmethod
+    def consultar_estoque_produto_pelo_produto(produto: Produto) -> EstoqueProduto:
+        estoque_produto = EstoqueProduto.objects.get(produto=produto)
+        return estoque_produto
 
     @staticmethod
     def consultar_todos_os_estoques_de_produtos() -> QuerySet[EstoqueProduto]:

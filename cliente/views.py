@@ -4,7 +4,6 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from cliente.models import Cliente
 from cliente.repo.cliente import RepoClienteLeitura
 from cliente.serializers import ClienteSerializer
 from cliente.services.cliente import ClienteService

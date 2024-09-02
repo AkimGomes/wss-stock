@@ -1,7 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework.test import APITestCase
 from django.urls import reverse
-from cliente.models import Cliente
 from rest_framework import status
 
 from cliente.repo.cliente import RepoClienteEscritaTeste, RepoClienteLeituraTeste

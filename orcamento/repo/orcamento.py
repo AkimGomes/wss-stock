@@ -1,7 +1,6 @@
 from django.db.models import QuerySet
 
 from orcamento.models import Orcamento
-from orcamento.serializers import OrcamentoSerializer
 
 
 class RepoOrcamentoLeitura:
